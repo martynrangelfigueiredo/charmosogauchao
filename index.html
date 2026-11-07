@@ -25,8 +25,8 @@
   <style>
     :root {
       --bg: #070a0d;
-      --surface: rgba(15, 21, 26, 0.88);
-      --border: rgba(255, 255, 255, 0.1);
+      --surface: rgba(15, 21, 26, 0.92);
+      --border: rgba(255, 255, 255, 0.12);
       --text: #f1f5f9;
       --muted: #94a3b8;
       --rs-green: #009b3a;
@@ -130,7 +130,7 @@
 
     .btn {
       appearance: none;
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.07);
       color: var(--text);
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -145,12 +145,23 @@
     }
 
     .btn:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.24);
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.26);
     }
 
     .btn:active {
       transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: rgba(0, 155, 58, 0.22);
+      border-color: rgba(0, 155, 58, 0.65);
+      color: #bbf7d0;
+    }
+
+    .btn-primary:hover {
+      background: rgba(0, 155, 58, 0.35);
+      border-color: var(--rs-green);
     }
 
     .btn.active {
@@ -194,7 +205,7 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.72);
+      background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(4px);
       display: none;
       align-items: center;
@@ -211,10 +222,10 @@
       background: #111820;
       border: 1px solid var(--border);
       border-radius: 12px;
-      max-width: 440px;
+      max-width: 500px;
       width: 100%;
       padding: 20px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
     }
 
     .modal-header {
@@ -234,17 +245,18 @@
     .controls-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px 14px;
-      font-size: 0.84rem;
+      gap: 8px 12px;
+      font-size: 0.82rem;
     }
 
     .control-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 6px 8px;
-      background: rgba(255, 255, 255, 0.03);
+      padding: 7px 10px;
+      background: rgba(255, 255, 255, 0.04);
       border-radius: 6px;
+      gap: 8px;
     }
 
     kbd {
@@ -254,19 +266,31 @@
       border-radius: 4px;
       padding: 2px 6px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       color: #f8fafc;
+      white-space: nowrap;
+    }
+
+    .modal-actions {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .modal-note {
-      margin-top: 14px;
+      margin-top: 12px;
       font-size: 0.78rem;
       color: var(--muted);
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
-    @media (max-width: 600px) {
-      .subtitle, .btn-label-hide-mobile {
+    @media (max-width: 640px) {
+      .subtitle, .hide-mobile {
         display: none;
       }
       .controls-grid {
@@ -287,11 +311,15 @@
       </div>
 
       <div class="actions">
+        <button type="button" class="btn btn-primary" id="btn-remap" title="Abrir editor de botões do Teclado e Controle">
+          <span>⚙️ Editar Botões</span>
+        </button>
+        <button type="button" class="btn" id="btn-controls" title="Ver mapa de botões do ISSD">
+          <span class="hide-mobile">Mapa do Jogo</span>
+          <span style="display:none" id="mobile-help-icon">?</span>
+        </button>
         <button type="button" class="btn" id="btn-crt" title="Alternar efeito de TV de Tubo (Scanlines)">
           <span>CRT</span>
-        </button>
-        <button type="button" class="btn" id="btn-controls" title="Ver atalhos do teclado e controle">
-          <span>Controles</span>
         </button>
         <button type="button" class="btn" id="btn-fullscreen" title="Tela Cheia">
           <span>Tela Cheia</span>
@@ -304,31 +332,106 @@
     </main>
   </div>
 
-  <!-- Modal rápido de controles -->
+  <!-- Modal explicativo + atalho para o remapeador -->
   <div class="modal-backdrop" id="controls-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="modal-title">Controles Padrão (SNES)</h2>
+        <h2 id="modal-title">Botões Otimizados (Posição Real do SNES)</h2>
         <button type="button" class="btn" id="btn-close-modal">Fechar</button>
       </div>
+
       <div class="controls-grid">
-        <div class="control-item"><span>Direcionais</span> <kbd>Setas</kbd></div>
-        <div class="control-item"><span>Start</span> <kbd>Enter</kbd></div>
-        <div class="control-item"><span>Select</span> <kbd>Shift</kbd></div>
-        <div class="control-item"><span>Botão B (Passe)</span> <kbd>Z</kbd></div>
-        <div class="control-item"><span>Botão A (Cruzamento)</span> <kbd>X</kbd></div>
-        <div class="control-item"><span>Botão Y (Chute/Corrida)</span> <kbd>A</kbd></div>
-        <div class="control-item"><span>Botão X (Lançamento)</span> <kbd>S</kbd></div>
-        <div class="control-item"><span>Botões L / R</span> <kbd>Q</kbd> / <kbd>W</kbd></div>
+        <div class="control-item">
+          <span><strong>B</strong> (Passe / Carrinho)</span>
+          <kbd>Baixo (✕ / A) • Z</kbd>
+        </div>
+        <div class="control-item">
+          <span><strong>Y</strong> (Chute / Corrida)</span>
+          <kbd>Esquerda (▢ / X) • A</kbd>
+        </div>
+        <div class="control-item">
+          <span><strong>A</strong> (Cruzamento / Balão)</span>
+          <kbd>Direita (◯ / B) • X</kbd>
+        </div>
+        <div class="control-item">
+          <span><strong>X</strong> (Lançamento / Tabela)</span>
+          <kbd>Cima (△ / Y) • S</kbd>
+        </div>
+        <div class="control-item">
+          <span><strong>L / R</strong> (Estratégia / Goleiro)</span>
+          <kbd>L1 / R1 • Q / W</kbd>
+        </div>
+        <div class="control-item">
+          <span><strong>Start / Select</strong></span>
+          <kbd>Enter / Shift</kbd>
+        </div>
       </div>
+
       <p class="modal-note">
-        💡 <strong>Joysticks USB/Bluetooth</strong> (Xbox, PlayStation, 8BitDo) são reconhecidos automaticamente ao pressionar qualquer botão. Você também pode reconfigurar teclas na barra inferior do emulador.
+        🎮 <strong>Otimizado para SNES:</strong> Os botões já vêm configurados pela <strong>posição física do controle de Super Nintendo</strong> (botão de baixo passa, esquerda chuta/corre, direita cruza, cima lança). Se o seu controle USB usar outra ordem, clique em <strong>Editar Botões no Emulador</strong> abaixo para mapear como preferir.
       </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="btn-open-ejs-remap">
+          ⚙️ Editar Botões no Emulador
+        </button>
+        <button type="button" class="btn" id="btn-swap-abxy" title="Inverter A/B e X/Y caso seu controle USB inverta os botões">
+          🔄 Inverter A↔B / X↔Y
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
-    // Configuração de alta performance do EmulatorJS com boot automático
+    // Layout físico fiel ao Super Nintendo (Posicional: Sul=B, Oeste=Y, Leste=A, Norte=X)
+    function createSnesControllerLayout(swapFaceButtons) {
+      const btnSouth = swapFaceButtons ? "BUTTON_2" : "BUTTON_1"; // B no SNES (Passe)
+      const btnEast  = swapFaceButtons ? "BUTTON_1" : "BUTTON_2"; // A no SNES (Cruzamento)
+      const btnWest  = swapFaceButtons ? "BUTTON_4" : "BUTTON_3"; // Y no SNES (Chute/Corrida)
+      const btnNorth = swapFaceButtons ? "BUTTON_3" : "BUTTON_4"; // X no SNES (Lançamento)
+
+      const playerMap = {
+        0:  { value: "z",           value2: btnSouth },            // SNES B (Sul - Passe)
+        1:  { value: "a",           value2: btnWest },             // SNES Y (Oeste - Chute/Corrida)
+        2:  { value: "shift",       value2: "SELECT" },            // Select
+        3:  { value: "enter",       value2: "START" },             // Start
+        4:  { value: "up arrow",    value2: "DPAD_UP" },           // Cima
+        5:  { value: "down arrow",  value2: "DPAD_DOWN" },         // Baixo
+        6:  { value: "left arrow",  value2: "DPAD_LEFT" },         // Esquerda
+        7:  { value: "right arrow", value2: "DPAD_RIGHT" },        // Direita
+        8:  { value: "x",           value2: btnEast },             // SNES A (Leste - Cruzamento)
+        9:  { value: "s",           value2: btnNorth },            // SNES X (Norte - Lançamento)
+        10: { value: "q",           value2: "LEFT_TOP_SHOULDER" }, // SNES L
+        11: { value: "w",           value2: "RIGHT_TOP_SHOULDER" },// SNES R
+        12: { value: "tab",         value2: "LEFT_BOTTOM_SHOULDER" },
+        13: { value: "r",           value2: "RIGHT_BOTTOM_SHOULDER" },
+        14: { value: "",            value2: "LEFT_STICK" },
+        15: { value: "",            value2: "RIGHT_STICK" },
+        16: { value: "h",           value2: "LEFT_STICK_X:+1" },
+        17: { value: "f",           value2: "LEFT_STICK_X:-1" },
+        18: { value: "g",           value2: "LEFT_STICK_Y:+1" },
+        19: { value: "t",           value2: "LEFT_STICK_Y:-1" },
+        20: { value: "l",           value2: "RIGHT_STICK_X:+1" },
+        21: { value: "j",           value2: "RIGHT_STICK_X:-1" },
+        22: { value: "k",           value2: "RIGHT_STICK_Y:+1" },
+        23: { value: "i",           value2: "RIGHT_STICK_Y:-1" },
+        24: { value: "1" },
+        25: { value: "2" },
+        26: { value: "3" },
+        27: {},
+        28: {},
+        29: {}
+      };
+
+      return {
+        0: JSON.parse(JSON.stringify(playerMap)),
+        1: JSON.parse(JSON.stringify(playerMap)),
+        2: JSON.parse(JSON.stringify(playerMap)),
+        3: JSON.parse(JSON.stringify(playerMap))
+      };
+    }
+
+    // Configuração de alta performance do EmulatorJS com boot automático e layout SNES real
     window.EJS_player = "#game";
     window.EJS_core = "snes";
     window.EJS_gameName = "ISSD - Charmoso Gauchão 2026-27 Deluxe";
@@ -339,15 +442,75 @@
     window.EJS_language = "pt-BR";
     window.EJS_threads = false;
     window.EJS_backgroundBlur = false;
+    window.EJS_defaultControls = createSnesControllerLayout(false);
 
-    // Utilitários de UI (CRT, Tela Cheia e Modal de Controles)
+    // Aplica o layout otimizado de SNES também se o navegador tiver salvo o padrão antigo invertido
+    window.EJS_onGameStart = function () {
+      try {
+        const emu = window.EJS_emulator;
+        if (emu && !localStorage.getItem("charmoso_snes_layout_v2")) {
+          emu.controls = createSnesControllerLayout(false);
+          if (typeof emu.setupKeys === "function") {
+            emu.setupKeys();
+          }
+          if (typeof emu.saveSettings === "function") {
+            emu.saveSettings();
+          }
+          if (typeof emu.checkSupportedOpts === "function") {
+            emu.checkSupportedOpts();
+          }
+          localStorage.setItem("charmoso_snes_layout_v2", "1");
+        }
+      } catch (e) {
+        console.warn("Não foi possível atualizar controles automaticamente:", e);
+      }
+    };
+
+    // Utilitários de UI (Editor de Botões Nativo, Inversão Rápida, CRT, Tela Cheia e Modal)
     (function () {
       const stage = document.getElementById("stage");
       const btnCrt = document.getElementById("btn-crt");
       const btnFullscreen = document.getElementById("btn-fullscreen");
       const btnControls = document.getElementById("btn-controls");
+      const btnRemap = document.getElementById("btn-remap");
+      const btnOpenEjsRemap = document.getElementById("btn-open-ejs-remap");
+      const btnSwapAbxy = document.getElementById("btn-swap-abxy");
       const btnCloseModal = document.getElementById("btn-close-modal");
       const modal = document.getElementById("controls-modal");
+      let isSwapped = false;
+
+      function openNativeControlSettings() {
+        modal.classList.remove("open");
+        const emu = window.EJS_emulator;
+        if (!emu) return;
+
+        // Abre a janela nativa de configuração de controles do EmulatorJS
+        if (emu.controlMenu) {
+          const isHidden = emu.controlMenu.style.display === "none" || !emu.controlMenu.style.display;
+          emu.controlMenu.style.display = isHidden ? "" : "none";
+          return;
+        }
+
+        // Fallback caso o botão esteja na barra inferior do emulador
+        const controlBtn = document.querySelector(".ejs_menu_button");
+        if (controlBtn) controlBtn.click();
+      }
+
+      btnRemap.addEventListener("click", openNativeControlSettings);
+      btnOpenEjsRemap.addEventListener("click", openNativeControlSettings);
+
+      btnSwapAbxy.addEventListener("click", function () {
+        isSwapped = !isSwapped;
+        const emu = window.EJS_emulator;
+        if (emu) {
+          emu.controls = createSnesControllerLayout(isSwapped);
+          if (typeof emu.saveSettings === "function") emu.saveSettings();
+          if (typeof emu.setupKeys === "function") emu.setupKeys();
+        }
+        btnSwapAbxy.textContent = isSwapped
+          ? "✅ A↔B / X↔Y Invertidos (Clique p/ Padrão SNES)"
+          : "🔄 Inverter A↔B / X↔Y";
+      });
 
       btnCrt.addEventListener("click", function () {
         const active = stage.classList.toggle("crt");
@@ -385,4 +548,3 @@
   <script src="https://cdn.emulatorjs.org/stable/data/loader.js" async></script>
 </body>
 </html>
-
