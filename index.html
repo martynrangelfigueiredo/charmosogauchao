@@ -813,11 +813,75 @@
     window.EJS_backgroundBlur = false;
     window.EJS_defaultControls = createSnesControllerLayout(false);
 
+    // CORREÇÃO CRÍTICA DO EMULATORJS:
+    // Por padrão, o EmulatorJS chama Module.callMain() ANTES de inserir o <canvas> no DOM,
+    // fazendo o WebGL inicializar com o canvas fora do DOM (300x150 / 0x0) e cortando metade da imagem no 1º carregamento.
+    // Aqui garantimos que o <canvas> já esteja no DOM e com tamanho real ANTES de Module.callMain() rodar,
+    // além de forçar o Emscripten a recalcular o glViewport após os primeiros frames.
+    function forceWebGLViewportRecalc() {
+      const emu = window.EJS_emulator;
+      if (!emu || !emu.canvas || !emu.game) return;
+      const rect = emu.game.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      // Força mudança real de 1px para que o listener do Emscripten não ignore o evento resize
+      emu.canvas.style.width = (Math.floor(rect.width) - 1) + "px";
+      emu.canvas.style.height = (Math.floor(rect.height) - 1) + "px";
+      window.dispatchEvent(new Event("resize"));
+
+      requestAnimationFrame(function () {
+        emu.canvas.style.width = "100%";
+        emu.canvas.style.height = "100%";
+        if (emu.Module && typeof emu.Module.setCanvasSize === "function") {
+          emu.Module.setCanvasSize(Math.round(rect.width), Math.round(rect.height));
+        }
+        window.dispatchEvent(new Event("resize"));
+        if (typeof emu.handleResize === "function") {
+          emu.handleResize();
+        }
+      });
+    }
+
+    window.EJS_ready = function () {
+      try {
+        const emu = window.EJS_emulator;
+        if (!emu || typeof emu.startGame !== "function") return;
+
+        const origStartGame = emu.startGame.bind(emu);
+        emu.startGame = function () {
+          try {
+            syncEmulatorViewport();
+            if (this.game && this.canvas) {
+              this.game.classList.remove("ejs_game");
+              this.game.classList.add("ejs_canvas_parent");
+              if (this.canvas.parentElement !== this.game) {
+                this.game.appendChild(this.canvas);
+              }
+              const rect = this.game.getBoundingClientRect();
+              if (rect.width > 0 && rect.height > 0) {
+                this.canvas.width = Math.round(rect.width);
+                this.canvas.height = Math.round(rect.height);
+              }
+            }
+          } catch (err) {
+            console.warn("Erro ao pré-montar canvas:", err);
+          }
+          const result = origStartGame();
+          forceWebGLViewportRecalc();
+          return result;
+        };
+      } catch (e) {
+        console.warn("Erro no hook EJS_ready:", e);
+      }
+    };
+
     window.EJS_onGameStart = function () {
       try {
-        // Dispara múltiplos pulsos de resize após o boot do WebGL para garantir que o viewport 4:3 nunca corte no 1º carregamento
-        [0, 80, 250, 600, 1200].forEach(function (delay) {
-          setTimeout(syncEmulatorViewport, delay);
+        [0, 60, 180, 450, 1000, 2000].forEach(function (delay) {
+          setTimeout(function () {
+            syncEmulatorViewport();
+            forceWebGLViewportRecalc();
+          }, delay);
         });
 
         const emu = window.EJS_emulator;
