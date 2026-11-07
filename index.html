@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>ISSD - Charmoso Gauchão 2026/27 Deluxe | Jogar Online (SNES)</title>
   <meta name="description" content="Jogue International Superstar Soccer Deluxe - Charmoso Gauchão 2026-27 Deluxe diretamente no navegador em 60 FPS." />
-  <meta name="theme-color" content="#090514" />
+  <meta name="theme-color" content="#2d1457" />
 
   <!-- Open Graph / Social -->
   <meta property="og:type" content="website" />
@@ -19,18 +19,20 @@
   <link rel="preload" href="https://cdn.emulatorjs.org/stable/data/loader.js" as="script" />
   <link rel="preload" href="rom/ISSD%20-%20Charmoso%20Gauch%C3%A3o%202026-27%20Deluxe.smc" as="fetch" crossorigin />
 
-  <!-- Favicon SVG inline -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23090514' stroke='%23ff2a54' stroke-width='4'/%3E%3Cpath d='M10 20h44v8H10z' fill='%2300e575'/%3E%3Cpath d='M10 28h44v8H10z' fill='%23ff2a54'/%3E%3Cpath d='M10 36h44v8H10z' fill='%23ffb800'/%3E%3Ccircle cx='32' cy='32' r='10' fill='%23ffffff' stroke='%23090514' stroke-width='3'/%3E%3C/svg%3E" />
+  <!-- Favicon SVG inline (Tema Roxo Vibrante + Faixas RS + Bola) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%236d28d9'/%3E%3Cstop offset='100%25' stop-color='%233b0764'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23bg)' stroke='%23c084fc' stroke-width='4'/%3E%3Cpath d='M8 18h48v9H8z' fill='%2300e575'/%3E%3Cpath d='M8 27h48v10H8z' fill='%23ff2a54'/%3E%3Cpath d='M8 37h48v9H8z' fill='%23ffb800'/%3E%3Ccircle cx='32' cy='32' r='12' fill='%23ffffff' stroke='%234c1d95' stroke-width='3.5'/%3E%3Cpolygon points='32,24 37,28 35,34 29,34 27,28' fill='%234c1d95'/%3E%3C/svg%3E" />
 
   <style>
     :root {
       --app-height: 100dvh;
-      --bg-deep: #080410;
-      --bg-panel: rgba(14, 9, 26, 0.94);
-      --border-cyber: rgba(255, 42, 84, 0.42);
-      --border-subtle: rgba(255, 255, 255, 0.14);
-      --text: #f8fafc;
-      --muted: #cbd5e1;
+      --bg-deep: #241046;
+      --bg-mid: #31175e;
+      --bg-panel: rgba(43, 19, 82, 0.97);
+      --border-cyber: rgba(192, 132, 252, 0.5);
+      --border-subtle: rgba(233, 213, 255, 0.2);
+      --text: #faf5ff;
+      --muted: #e9d5ff;
+      --neon-purple: #c084fc;
       --neon-red: #ff2a54;
       --neon-green: #00e575;
       --neon-gold: #ffb800;
@@ -66,21 +68,23 @@
       flex-direction: column;
       overflow: hidden;
       background-color: var(--bg-deep);
-      /* Estética Retro-Grid / Halftone / Synth-Brutalist (estilo overlays História Pública / João Carvalho) */
+      /* Estética Retro-Grid / Synth-Purple (Roxo vibrante em vez de preto) */
       background-image:
-        radial-gradient(circle at 50% 0%, rgba(255, 42, 84, 0.22), transparent 55%),
-        radial-gradient(circle at 15% 85%, rgba(0, 229, 117, 0.16), transparent 45%),
-        radial-gradient(circle at 85% 80%, rgba(255, 184, 0, 0.14), transparent 45%),
-        radial-gradient(rgba(255, 42, 84, 0.16) 1px, transparent 1px),
-        linear-gradient(to right, rgba(255, 42, 84, 0.08) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0, 240, 255, 0.07) 1px, transparent 1px);
+        radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.38), transparent 60%),
+        radial-gradient(circle at 15% 85%, rgba(255, 42, 84, 0.22), transparent 50%),
+        radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.32), transparent 50%),
+        radial-gradient(rgba(216, 180, 254, 0.22) 1px, transparent 1px),
+        linear-gradient(to right, rgba(192, 132, 252, 0.14) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(192, 132, 252, 0.12) 1px, transparent 1px),
+        linear-gradient(180deg, #2d1457 0%, #241046 55%, #1d0c3a 100%);
       background-size:
         100% 100%,
         100% 100%,
         100% 100%,
         16px 16px,
         40px 40px,
-        40px 40px;
+        40px 40px,
+        100% 100%;
       padding-top: env(safe-area-inset-top, 0px);
       padding-bottom: env(safe-area-inset-bottom, 0px);
     }
@@ -95,37 +99,37 @@
       pointer-events: none;
       z-index: 0;
       background-image:
-        linear-gradient(to right, rgba(255, 42, 84, 0.28) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 184, 0, 0.22) 1px, transparent 1px);
+        linear-gradient(to right, rgba(192, 132, 252, 0.38) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 184, 0, 0.26) 1px, transparent 1px);
       background-size: 48px 32px;
       transform: perspective(360px) rotateX(62deg);
       mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.95) 10%, transparent 95%);
       -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.95) 10%, transparent 95%);
     }
 
-    /* Vignette + moldura sutil de monitor retrô */
+    /* Vignette roxa suave */
     .retro-vignette {
       position: absolute;
       inset: 0;
       pointer-events: none;
       z-index: 1;
-      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.75);
+      box-shadow: inset 0 0 75px rgba(20, 6, 42, 0.55);
     }
 
-    /* Barra superior Neo-Retro / Brutalist HUD */
+    /* Barra superior Neo-Retro Roxa */
     .topbar {
-      height: 46px;
-      min-height: 46px;
+      height: 48px;
+      min-height: 48px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 10px;
       padding: 0 12px;
-      background: rgba(10, 6, 20, 0.92);
-      border-bottom: 2px solid var(--neon-red);
-      box-shadow: 0 4px 20px rgba(255, 42, 84, 0.22);
+      background: linear-gradient(90deg, rgba(48, 20, 92, 0.96), rgba(66, 26, 122, 0.96));
+      border-bottom: 2px solid var(--neon-purple);
+      box-shadow: 0 4px 20px rgba(109, 40, 217, 0.45);
       backdrop-filter: blur(10px);
-      z-index: 30;
+      z-index: 40;
       position: relative;
     }
 
@@ -147,19 +151,19 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
       min-width: 0;
       flex: 1;
     }
 
     .badge-rs {
       display: inline-flex;
-      width: 20px;
-      height: 14px;
-      border-radius: 2px;
+      width: 22px;
+      height: 15px;
+      border-radius: 3px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      box-shadow: 2px 2px 0 var(--neon-red);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 2px 2px 0 rgba(192, 132, 252, 0.7);
       flex-shrink: 0;
     }
 
@@ -169,12 +173,14 @@
 
     .brand-title {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-weight: 800;
-      font-size: 0.88rem;
+      font-weight: 900;
+      font-size: 0.95rem;
       letter-spacing: 0.03em;
       text-transform: uppercase;
       color: #ffffff;
-      text-shadow: 0 0 10px rgba(255, 42, 84, 0.6);
+      text-shadow:
+        0 1px 0 #3b0764,
+        0 0 12px rgba(192, 132, 252, 0.85);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -185,10 +191,10 @@
       font-size: 0.68rem;
       font-weight: 700;
       color: var(--neon-gold);
-      background: rgba(255, 184, 0, 0.12);
-      border: 1px solid rgba(255, 184, 0, 0.45);
+      background: rgba(255, 184, 0, 0.16);
+      border: 1px solid rgba(255, 184, 0, 0.55);
       padding: 2px 6px;
-      border-radius: 3px;
+      border-radius: 4px;
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -196,42 +202,135 @@
     .actions {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       flex-shrink: 0;
+      position: relative;
     }
 
-    /* Botões estilo Retro-HUD Brutalista */
+    /* Botões estilo Retro-HUD Roxo */
     .btn {
       appearance: none;
       text-decoration: none;
-      background: #160d29;
+      background: #3b1970;
       color: var(--text);
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      box-shadow: 2px 2px 0 rgba(255, 42, 84, 0.65);
-      border-radius: 4px;
-      padding: 5px 9px;
+      border: 1px solid rgba(216, 180, 254, 0.45);
+      box-shadow: 2px 2px 0 rgba(192, 132, 252, 0.65);
+      border-radius: 6px;
+      padding: 6px 11px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.74rem;
-      font-weight: 700;
+      font-size: 0.78rem;
+      font-weight: 800;
       letter-spacing: 0.02em;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 6px;
       white-space: nowrap;
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease, border-color 0.15s ease;
     }
 
     .btn:hover {
-      background: #231440;
+      background: #4c228f;
       border-color: var(--neon-cyan);
       box-shadow: 2px 2px 0 var(--neon-cyan);
     }
 
     .btn:active {
       transform: translate(1px, 1px);
-      box-shadow: 1px 1px 0 var(--neon-red);
+      box-shadow: 1px 1px 0 var(--neon-purple);
+    }
+
+    .btn-menu-trigger {
+      background: linear-gradient(135deg, #6d28d9, #4c1d95);
+      border-color: #d8b4fe;
+      color: #ffffff;
+      box-shadow: 2px 2px 0 rgba(255, 184, 0, 0.8);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    .btn-menu-trigger.open {
+      background: linear-gradient(135deg, #ff2a54, #9333ea);
+      border-color: #ffffff;
+      box-shadow: 2px 2px 0 var(--neon-cyan);
+    }
+
+    /* Menu Dropdown Unificado com todas as opções */
+    .menu-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 280px;
+      background: var(--bg-panel);
+      border: 2px solid var(--neon-purple);
+      border-radius: 8px;
+      box-shadow:
+        6px 6px 0 rgba(109, 40, 217, 0.65),
+        0 18px 45px rgba(18, 5, 38, 0.9);
+      padding: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 80;
+      backdrop-filter: blur(12px);
+    }
+
+    .menu-dropdown.open {
+      display: flex;
+      animation: menuFadeIn 0.14s ease-out;
+    }
+
+    @keyframes menuFadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .menu-header-label {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #d8b4fe;
+      padding: 4px 6px 2px;
+      border-bottom: 1px solid rgba(216, 180, 254, 0.2);
+      margin-bottom: 2px;
+    }
+
+    .menu-item {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 9px 11px;
+      font-size: 0.78rem;
+      text-align: left;
+      border-radius: 6px;
+    }
+
+    .menu-item-icon {
+      width: 20px;
+      text-align: center;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .menu-item-badge {
+      margin-left: auto;
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #f3e8ff;
+    }
+
+    .btn-record-quick {
+      display: none;
+      padding: 5px 10px;
+      font-size: 0.74rem;
+    }
+
+    .btn-record-quick.recording {
+      display: inline-flex;
     }
 
     .btn-primary {
@@ -320,7 +419,7 @@
     .stage {
       flex: 1;
       width: 100%;
-      height: calc(var(--app-height, 100dvh) - 46px);
+      height: calc(var(--app-height, 100dvh) - 48px);
       position: relative;
       z-index: 5;
       overflow: hidden;
@@ -332,11 +431,12 @@
       background: transparent !important;
     }
 
-    /* Deixa o fundo do EmulatorJS transparente para revelar a arte Synthwave/Grid ao redor e atrás dos botões mobile */
+    /* Deixa o fundo do EmulatorJS transparente para revelar o tema Roxo Synth-Grid ao redor da tela 4:3 e atrás dos botões mobile */
     #game .ejs_parent,
     .ejs_parent,
     .ejs_game_parent,
-    .ejs_canvas_parent {
+    .ejs_canvas_parent,
+    .ejs_game {
       background: transparent !important;
     }
 
@@ -354,16 +454,16 @@
       background-size: 100% 4px;
     }
 
-    /* Modais Estilo Janela Retro-OS / Brutalist Cyber */
+    /* Modais Estilo Janela Retro-OS Roxo */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(6, 3, 12, 0.82);
+      background: rgba(22, 8, 44, 0.82);
       backdrop-filter: blur(6px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 60;
+      z-index: 90;
       padding: 14px;
     }
 
@@ -373,11 +473,11 @@
 
     .modal {
       background: var(--bg-panel);
-      border: 2px solid var(--neon-red);
+      border: 2px solid var(--neon-purple);
       box-shadow:
-        6px 6px 0 rgba(255, 42, 84, 0.5),
-        0 20px 60px rgba(0, 0, 0, 0.85);
-      border-radius: 6px;
+        6px 6px 0 rgba(109, 40, 217, 0.65),
+        0 20px 60px rgba(15, 5, 32, 0.9);
+      border-radius: 8px;
       max-width: 540px;
       width: 100%;
       max-height: 90dvh;
@@ -390,8 +490,8 @@
       align-items: center;
       justify-content: space-between;
       padding: 10px 14px;
-      background: linear-gradient(90deg, rgba(255, 42, 84, 0.28), rgba(255, 184, 0, 0.15));
-      border-bottom: 2px solid var(--neon-red);
+      background: linear-gradient(90deg, rgba(126, 34, 206, 0.55), rgba(255, 42, 84, 0.3));
+      border-bottom: 2px solid var(--neon-purple);
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
@@ -437,16 +537,16 @@
       align-items: center;
       justify-content: space-between;
       padding: 8px 10px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(216, 180, 254, 0.2);
       border-left: 3px solid var(--neon-green);
       border-radius: 4px;
       gap: 8px;
     }
 
     kbd {
-      background: #1b1130;
-      border: 1px solid rgba(255, 184, 0, 0.45);
+      background: #3b1970;
+      border: 1px solid rgba(255, 184, 0, 0.55);
       border-bottom-width: 2px;
       border-radius: 4px;
       padding: 2px 6px;
@@ -459,8 +559,8 @@
     .info-section {
       margin-bottom: 14px;
       padding: 12px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(216, 180, 254, 0.2);
       border-left: 3px solid var(--neon-gold);
       border-radius: 4px;
     }
@@ -497,10 +597,10 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 0.7rem;
       padding: 3px 7px;
-      border-radius: 3px;
-      background: rgba(255, 42, 84, 0.16);
-      border: 1px solid rgba(255, 42, 84, 0.45);
-      color: #fecdd3;
+      border-radius: 4px;
+      background: rgba(168, 85, 247, 0.25);
+      border: 1px solid rgba(216, 180, 254, 0.5);
+      color: #f3e8ff;
     }
 
     .modal-actions {
@@ -524,29 +624,32 @@
     /* Ajustes da barra superior em telas Mobile */
     @media (max-width: 680px) {
       .topbar {
-        height: 40px;
-        min-height: 40px;
-        padding: 0 8px;
-        gap: 4px;
+        height: 44px;
+        min-height: 44px;
+        padding: 0 10px;
+        gap: 8px;
       }
 
       .stage {
-        height: calc(var(--app-height, 100dvh) - 40px);
+        height: calc(var(--app-height, 100dvh) - 44px);
       }
 
-      .tag-cyber,
-      .hide-mobile {
+      .tag-cyber {
         display: none;
       }
 
       .brand-title {
-        font-size: 0.72rem;
+        font-size: 0.88rem;
+        letter-spacing: 0.02em;
       }
 
-      .btn {
-        padding: 4px 6px;
-        font-size: 0.67rem;
-        box-shadow: 1px 1px 0 rgba(255, 42, 84, 0.65);
+      .btn-menu-trigger {
+        padding: 6px 10px;
+        font-size: 0.76rem;
+      }
+
+      .menu-dropdown {
+        width: min(290px, calc(100vw - 20px));
       }
 
       .controls-grid {
@@ -557,7 +660,7 @@
 </head>
 <body>
   <div class="app-shell">
-    <!-- Background estética Synth-Grid / Halftone -->
+    <!-- Background estética Synth-Grid Roxo -->
     <div class="retro-grid-floor" aria-hidden="true"></div>
     <div class="retro-vignette" aria-hidden="true"></div>
 
@@ -571,32 +674,60 @@
       </div>
 
       <div class="actions">
-        <a class="btn btn-download" href="rom/ISSD%20-%20Charmoso%20Gauch%C3%A3o%202026-27%20Deluxe.zip" download="ISSD - Charmoso Gauchão 2026-27 Deluxe.zip" title="Baixar ROM (.zip) para jogar em qualquer emulador de SNES">
-          <span>⬇️</span>
-          <span>ROM</span>
-        </a>
-        <button type="button" class="btn btn-record" id="btn-record" title="Gravar partida e baixar vídeo automaticamente ao parar">
+        <!-- Botão rápido que só aparece quando estiver gravando partida -->
+        <button type="button" class="btn btn-record btn-record-quick" id="btn-record-quick" title="Parar gravação e salvar vídeo">
           <span class="rec-dot"></span>
-          <span id="record-label">Gravar</span>
+          <span id="record-quick-label">00:00</span>
         </button>
-        <button type="button" class="btn btn-primary" id="btn-remap" title="Editar botões do Controle ou Teclado">
-          <span>⚙️</span>
-          <span class="hide-mobile">Botões</span>
+
+        <!-- Botão único de Menu que concentra todas as opções -->
+        <button type="button" class="btn btn-menu-trigger" id="btn-menu-toggle" aria-expanded="false" aria-controls="options-menu">
+          <span id="menu-toggle-icon">☰</span>
+          <span>Menu</span>
         </button>
-        <button type="button" class="btn" id="btn-controls" title="Ver mapa de comandos do jogo">
-          <span>🎮</span>
-          <span class="hide-mobile">Comandos</span>
-        </button>
-        <button type="button" class="btn btn-info" id="btn-info" title="Informações sobre o jogo e dicas">
-          <span>?</span>
-        </button>
-        <button type="button" class="btn" id="btn-crt" title="Alternar filtro TV de Tubo (Scanlines)">
-          <span>CRT</span>
-        </button>
-        <button type="button" class="btn" id="btn-fullscreen" title="Alternar Tela Cheia">
-          <span>⛶</span>
-          <span class="hide-mobile">Tela Cheia</span>
-        </button>
+
+        <!-- Menu Dropdown com todas as opções -->
+        <nav class="menu-dropdown" id="options-menu" aria-label="Menu de opções do jogo">
+          <div class="menu-header-label">Opções &amp; Ferramentas</div>
+
+          <button type="button" class="btn btn-record menu-item" id="btn-record" title="Gravar partida em 60 FPS e baixar vídeo automaticamente ao parar">
+            <span class="menu-item-icon"><span class="rec-dot"></span></span>
+            <span id="record-label">Gravar Partida</span>
+            <span class="menu-item-badge">60 FPS</span>
+          </button>
+
+          <button type="button" class="btn btn-primary menu-item" id="btn-remap" title="Editar botões do Controle ou Teclado">
+            <span class="menu-item-icon">⚙️</span>
+            <span>Editar Botões</span>
+          </button>
+
+          <button type="button" class="btn menu-item" id="btn-controls" title="Ver mapa de comandos do jogo e inverter A/B e X/Y">
+            <span class="menu-item-icon">🎮</span>
+            <span>Comandos &amp; Inverter</span>
+          </button>
+
+          <a class="btn btn-download menu-item" id="btn-download-rom" href="rom/ISSD%20-%20Charmoso%20Gauch%C3%A3o%202026-27%20Deluxe.zip" download="ISSD - Charmoso Gauchão 2026-27 Deluxe.zip" title="Baixar ROM (.zip) para jogar em qualquer emulador de SNES">
+            <span class="menu-item-icon">⬇️</span>
+            <span>Baixar ROM (.ZIP)</span>
+            <span class="menu-item-badge">1.85 MB</span>
+          </a>
+
+          <button type="button" class="btn btn-info menu-item" id="btn-info" title="Informações sobre o jogo e dicas">
+            <span class="menu-item-icon">❓</span>
+            <span>Sobre o Jogo &amp; Dicas</span>
+          </button>
+
+          <button type="button" class="btn menu-item" id="btn-crt" title="Alternar filtro TV de Tubo (Scanlines)">
+            <span class="menu-item-icon">📺</span>
+            <span>Filtro TV de Tubo (CRT)</span>
+            <span class="menu-item-badge" id="crt-badge">OFF</span>
+          </button>
+
+          <button type="button" class="btn menu-item" id="btn-fullscreen" title="Alternar Tela Cheia">
+            <span class="menu-item-icon">⛶</span>
+            <span>Tela Cheia</span>
+          </button>
+        </nav>
       </div>
     </header>
 
@@ -784,12 +915,42 @@
     window.EJS_gameName = "ISSD - Charmoso Gauchão 2026-27 Deluxe";
     window.EJS_gameUrl = encodeURI("rom/ISSD - Charmoso Gauchão 2026-27 Deluxe.smc");
     window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
-    window.EJS_color = "#ff2a54";
+    window.EJS_color = "#7c3aed";
     window.EJS_startOnLoaded = true;
     window.EJS_language = "pt-BR";
     window.EJS_threads = false;
     window.EJS_backgroundBlur = false;
     window.EJS_defaultControls = createSnesControllerLayout(false);
+
+    // Recorta as barras pretas do canvas WebGL fora do viewport 4:3 para exibir o fundo Roxo Synth-Grid
+    function syncCanvasClipToViewport() {
+      try {
+        const emu = window.EJS_emulator;
+        const canvas = (emu && emu.canvas) || document.querySelector(".ejs_canvas");
+        if (!canvas || !canvas.width || !canvas.height) return;
+        const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+        if (!gl) return;
+        if (gl.getParameter(gl.FRAMEBUFFER_BINDING) !== null) return;
+        const vp = gl.getParameter(gl.VIEWPORT);
+        if (!vp || vp[2] <= 0 || vp[3] <= 0) return;
+
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const vx = vp[0], vy = vp[1], vw = vp[2], vh = vp[3];
+
+        const topPct    = Math.max(0, ((ch - (vy + vh)) / ch) * 100);
+        const rightPct  = Math.max(0, ((cw - (vx + vw)) / cw) * 100);
+        const bottomPct = Math.max(0, (vy / ch) * 100);
+        const leftPct   = Math.max(0, (vx / cw) * 100);
+
+        canvas.style.clipPath =
+          "inset(" +
+          topPct.toFixed(2) + "% " +
+          rightPct.toFixed(2) + "% " +
+          bottomPct.toFixed(2) + "% " +
+          leftPct.toFixed(2) + "%)";
+      } catch (e) {}
+    }
 
     // Garante que o <canvas> esteja inserido no DOM antes de Module.callMain() inicializar o WebGL
     // e impede o bug do handleResize() do EmulatorJS que oculta o virtualGamepad após 250ms no mobile
@@ -805,6 +966,8 @@
             this.virtualGamepad.style.display = "";
             this.virtualGamepad.style.opacity = "";
           }
+          setTimeout(syncCanvasClipToViewport, 60);
+          setTimeout(syncCanvasClipToViewport, 280);
           return res;
         };
       }
@@ -875,17 +1038,17 @@
           window.addEventListener("keydown", unlockRealAudio, true);
         }
 
-        // 2. Garante que os controles touch do mobile fiquem visíveis (neutralizando o setTimeout de 250ms do EmulatorJS)
-        if (emu && emu.touch && emu.virtualGamepad) {
-          [0, 100, 280, 500].forEach(function (delay) {
-            setTimeout(function () {
-              if (emu.virtualGamepad && !emu.paused) {
-                emu.virtualGamepad.style.display = "";
-                emu.virtualGamepad.style.opacity = "";
-              }
-            }, delay);
-          });
-        }
+        // 2. Garante que os controles touch do mobile fiquem visíveis e sincroniza o recorte 4:3 do canvas
+        [0, 100, 280, 500, 900].forEach(function (delay) {
+          setTimeout(function () {
+            if (emu && emu.touch && emu.virtualGamepad && !emu.paused) {
+              emu.virtualGamepad.style.display = "";
+              emu.virtualGamepad.style.opacity = "";
+            }
+            syncCanvasClipToViewport();
+          }, delay);
+        });
+        setInterval(syncCanvasClipToViewport, 400);
 
         // 3. Aplica o mapeamento posicional fiel ao controle de SNES
         if (emu && !localStorage.getItem("charmoso_snes_layout_v2")) {
@@ -900,12 +1063,19 @@
       }
     };
 
-    // Controles da Interface + Gravador de Partidas com Download Automático
+    // Controles da Interface + Menu Dropdown + Gravador de Partidas com Download Automático
     (function () {
       const stage = document.getElementById("stage");
+      const btnMenuToggle = document.getElementById("btn-menu-toggle");
+      const menuToggleIcon = document.getElementById("menu-toggle-icon");
+      const optionsMenu = document.getElementById("options-menu");
       const btnRecord = document.getElementById("btn-record");
       const recordLabel = document.getElementById("record-label");
+      const btnRecordQuick = document.getElementById("btn-record-quick");
+      const recordQuickLabel = document.getElementById("record-quick-label");
+      const btnDownloadRom = document.getElementById("btn-download-rom");
       const btnCrt = document.getElementById("btn-crt");
+      const crtBadge = document.getElementById("crt-badge");
       const btnFullscreen = document.getElementById("btn-fullscreen");
       const btnControls = document.getElementById("btn-controls");
       const btnInfo = document.getElementById("btn-info");
@@ -917,6 +1087,38 @@
       const controlsModal = document.getElementById("controls-modal");
       const infoModal = document.getElementById("info-modal");
       let isSwapped = false;
+
+      // Controle do Menu Dropdown
+      function closeMenu() {
+        optionsMenu.classList.remove("open");
+        btnMenuToggle.classList.remove("open");
+        btnMenuToggle.setAttribute("aria-expanded", "false");
+        menuToggleIcon.textContent = "☰";
+      }
+
+      function toggleMenu(e) {
+        if (e) e.stopPropagation();
+        const isOpen = optionsMenu.classList.toggle("open");
+        btnMenuToggle.classList.toggle("open", isOpen);
+        btnMenuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        menuToggleIcon.textContent = isOpen ? "✕" : "☰";
+      }
+
+      btnMenuToggle.addEventListener("click", toggleMenu);
+
+      document.addEventListener("pointerdown", function (e) {
+        if (
+          optionsMenu.classList.contains("open") &&
+          !optionsMenu.contains(e.target) &&
+          !btnMenuToggle.contains(e.target)
+        ) {
+          closeMenu();
+        }
+      });
+
+      btnDownloadRom.addEventListener("click", function () {
+        setTimeout(closeMenu, 150);
+      });
 
       // Estado do Gravador de Partidas
       let mediaRecorder = null;
@@ -964,6 +1166,8 @@
           alert("Aguarde o jogo iniciar para começar a gravação.");
           return;
         }
+
+        closeMenu();
 
         // Cria um canvas 4:3 dedicado (640x480) para gravar a imagem limpa sem bordas pretas externas
         const recCanvas = document.createElement("canvas");
@@ -1046,33 +1250,43 @@
           recordingTimer = null;
           recordingSeconds = 0;
           btnRecord.classList.remove("recording");
-          recordLabel.textContent = "Gravar";
+          btnRecordQuick.classList.remove("recording");
+          recordLabel.textContent = "Gravar Partida";
+          recordQuickLabel.textContent = "00:00";
           recCanvas.remove();
         };
 
         mediaRecorder.start(1000);
         btnRecord.classList.add("recording");
+        btnRecordQuick.classList.add("recording");
         recordingSeconds = 0;
-        recordLabel.textContent = "Parar (00:00)";
+        recordLabel.textContent = "Parar Gravação (00:00)";
+        recordQuickLabel.textContent = "Parar (00:00)";
         recordingTimer = setInterval(function () {
           recordingSeconds++;
-          recordLabel.textContent = "Parar (" + formatDuration(recordingSeconds) + ")";
+          const dur = formatDuration(recordingSeconds);
+          recordLabel.textContent = "Parar Gravação (" + dur + ")";
+          recordQuickLabel.textContent = "Parar (" + dur + ")";
         }, 1000);
       }
 
       function stopRecording() {
+        closeMenu();
         if (mediaRecorder && mediaRecorder.state !== "inactive") {
           mediaRecorder.stop();
         }
       }
 
-      btnRecord.addEventListener("click", function () {
+      function toggleRecording() {
         if (mediaRecorder && mediaRecorder.state === "recording") {
           stopRecording();
         } else {
           startRecording();
         }
-      });
+      }
+
+      btnRecord.addEventListener("click", toggleRecording);
+      btnRecordQuick.addEventListener("click", toggleRecording);
 
       function closeAllModals() {
         controlsModal.classList.remove("open");
@@ -1080,6 +1294,7 @@
       }
 
       function openNativeControlSettings() {
+        closeMenu();
         closeAllModals();
         const emu = window.EJS_emulator;
         if (!emu) return;
@@ -1113,9 +1328,12 @@
       btnCrt.addEventListener("click", function () {
         const active = stage.classList.toggle("crt");
         btnCrt.classList.toggle("active", active);
+        if (crtBadge) crtBadge.textContent = active ? "ON" : "OFF";
+        closeMenu();
       });
 
       btnFullscreen.addEventListener("click", function () {
+        closeMenu();
         const elem = document.documentElement;
         if (!document.fullscreenElement) {
           elem.requestFullscreen?.();
@@ -1125,11 +1343,13 @@
       });
 
       btnControls.addEventListener("click", function () {
+        closeMenu();
         infoModal.classList.remove("open");
         controlsModal.classList.add("open");
       });
 
       btnInfo.addEventListener("click", function () {
+        closeMenu();
         controlsModal.classList.remove("open");
         infoModal.classList.add("open");
       });
@@ -1146,7 +1366,10 @@
       });
 
       window.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") closeAllModals();
+        if (e.key === "Escape") {
+          closeMenu();
+          closeAllModals();
+        }
       });
     })();
   </script>

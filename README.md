@@ -11,16 +11,16 @@ Aplicação web estática de alta performance para jogar **International Superst
 ## ✨ Funcionalidades
 
 - 🚀 **Auto-Start Instantâneo (60 FPS):** O jogo inicia automaticamente assim que a página carrega (`EJS_startOnLoaded = true`), utilizando `<link rel="preload">` para baixar a ROM em paralelo com o motor WebAssembly e destravando o clock de vídeo mesmo antes do primeiro clique/toque do usuário.
-- 🎨 **Interface Cyber-Retro / Synth-Grid / Halftone:** Visual moderno inspirado em overlays retrô-futuristas, com fundo transparente no emulador revelando a grade neon tanto no Desktop quanto atrás dos controles touch no Mobile.
+- 🎨 **Tema Roxo Synth-Grid & Menu Unificado (`☰ Menu`):** Visual moderno em tons de roxo vibrante (SNES / Synthwave) com recorte dinâmico do canvas 4:3 para exibir a grade neon ao redor da tela no Desktop e atrás dos controles touch no Mobile, além de barra superior limpa com o título **Charmoso Gauchão 26/27** totalmente visível em smartphones.
 - 🎮 **Controles Otimizados (Posição Física do SNES):**
   - Mapeamento padrão fiel à posição física dos botões do Super Nintendo em controles Xbox, PlayStation e USB/Bluetooth.
-  - Botão **⚙️ Botões** na barra superior para abrir o remapeador completo do emulador (Teclado e até 4 Gamepads).
+  - Opção **⚙️ Editar Botões** no menu para abrir o remapeador completo do emulador (Teclado e até 4 Gamepads).
   - Atalho de 1 clique (**🔄 Inverter A↔B / X↔Y**) para controles genéricos USB.
-- 🔴 **Gravador de Partidas Integrado:** Grave suas partidas em **60 FPS** (proporção 4:3 limpa + áudio estéreo nativo do SNES). Ao clicar em **Parar**, o vídeo é salvo automaticamente na pasta **Downloads** com o formato:
+- 🔴 **Gravador de Partidas Integrado:** Grave suas partidas em **60 FPS** (proporção 4:3 limpa + áudio estéreo nativo do SNES), com indicador ao vivo no topo da tela. Ao clicar em **Parar**, o vídeo é salvo automaticamente na pasta **Downloads** com o formato:
   `ISSD - Charmoso Gauchão 2026-27 - DD-MM-AAAA HHhMM.mp4` *(ou `.webm`)*.
-- ⬇️ **Download Direto da ROM (`.ZIP`):** Botão dedicado na barra superior e no modal de informações para baixar a ROM compactada (`1.85 MB`) e jogar em qualquer emulador de Super Nintendo.
+- ⬇️ **Download Direto da ROM (`.ZIP`):** Opção dedicada no menu e no modal de informações para baixar a ROM compactada (`1.85 MB`) e jogar em qualquer emulador de Super Nintendo.
 - 📺 **Filtro CRT & Tela Cheia:** Alternância instantânea de scanlines estilo TV de tubo via GPU e modo tela cheia.
-- ❓ **Guia e Informações (`?`):** Ficha técnica do *Skinboll Patch ("For The People")*, clubes do Gauchão 2026/27 e comandos especiais do ISSD.
+- ❓ **Sobre o Jogo & Dicas:** Ficha técnica do *Skinboll Patch ("For The People")*, clubes do Gauchão 2026/27 e comandos especiais do ISSD.
 
 ---
 
