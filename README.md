@@ -1,28 +1,90 @@
-# ISSD - Charmoso Gauchão 2026/27 Deluxe (SNES Web Player)
+# ⚽ ISSD — Charmoso Gauchão 2026/27 Deluxe (SNES Web Player)
 
-Site estático ultra-performático para rodar **International Superstar Soccer Deluxe - Charmoso Gauchão 2026-27 Deluxe** automaticamente no navegador em 60 FPS via WebAssembly (`snes9x` / EmulatorJS).
+Aplicação web estática de alta performance para jogar **International Superstar Soccer Deluxe — Charmoso Gauchão 2026-27 Deluxe** (*Skinboll Patch*) diretamente no navegador em **60 FPS** via WebAssembly (`snes9x` / EmulatorJS), com carregamento automático para Desktop e Mobile.
 
-- **Subdomínio configurado:** `https://charmosogauchao.martynfigueiredo.com`
-- **ROM:** `rom/ISSD - Charmoso Gauchão 2026-27 Deluxe.smc`
+- 🌐 **Site Principal:** [https://charmosogauchao.martynfigueiredo.com](https://charmosogauchao.martynfigueiredo.com)
+- 🔗 **Mirror GitHub Pages:** [https://martynrangelfigueiredo.github.io/charmosogauchao/](https://martynrangelfigueiredo.github.io/charmosogauchao/)
+- 📦 **Repositório:** [github.com/martynrangelfigueiredo/charmosogauchao](https://github.com/martynrangelfigueiredo/charmosogauchao)
 
-## Como rodar localmente
+---
 
-Basta executar o servidor Node incluso (sem precisar instalar pacotes):
+## ✨ Funcionalidades
+
+- 🚀 **Auto-Start Instantâneo (60 FPS):** O jogo inicia automaticamente assim que a página carrega (`EJS_startOnLoaded = true`), utilizando `<link rel="preload">` para baixar a ROM em paralelo com o motor WebAssembly e destravando o clock de vídeo mesmo antes do primeiro clique/toque do usuário.
+- 🎨 **Interface Cyber-Retro / Synth-Grid / Halftone:** Visual moderno inspirado em overlays retrô-futuristas, com fundo transparente no emulador revelando a grade neon tanto no Desktop quanto atrás dos controles touch no Mobile.
+- 🎮 **Controles Otimizados (Posição Física do SNES):**
+  - Mapeamento padrão fiel à posição física dos botões do Super Nintendo em controles Xbox, PlayStation e USB/Bluetooth.
+  - Botão **⚙️ Botões** na barra superior para abrir o remapeador completo do emulador (Teclado e até 4 Gamepads).
+  - Atalho de 1 clique (**🔄 Inverter A↔B / X↔Y**) para controles genéricos USB.
+- 🔴 **Gravador de Partidas Integrado:** Grave suas partidas em **60 FPS** (proporção 4:3 limpa + áudio estéreo nativo do SNES). Ao clicar em **Parar**, o vídeo é salvo automaticamente na pasta **Downloads** com o formato:
+  `ISSD - Charmoso Gauchão 2026-27 - DD-MM-AAAA HHhMM.mp4` *(ou `.webm`)*.
+- ⬇️ **Download Direto da ROM (`.ZIP`):** Botão dedicado na barra superior e no modal de informações para baixar a ROM compactada (`1.85 MB`) e jogar em qualquer emulador de Super Nintendo.
+- 📺 **Filtro CRT & Tela Cheia:** Alternância instantânea de scanlines estilo TV de tubo via GPU e modo tela cheia.
+- ❓ **Guia e Informações (`?`):** Ficha técnica do *Skinboll Patch ("For The People")*, clubes do Gauchão 2026/27 e comandos especiais do ISSD.
+
+---
+
+## 🎮 Mapa de Controles Padrão
+
+| Botão SNES | Ação no ISSD | Controle (PS / Xbox) | Teclado |
+| :--- | :--- | :--- | :--- |
+| **B** *(Baixo)* | Passe rasteiro / Carrinho | `✕` / `A` *(Botão Sul)* | `Z` |
+| **Y** *(Esquerda)* | Chute / Corrida (Sprint) | `▢` / `X` *(Botão Oeste)* | `A` |
+| **A** *(Direita)* | Cruzamento / Balão | `◯` / `B` *(Botão Leste)* | `X` |
+| **X** *(Cima)* | Lançamento forte / Sair com goleiro | `△` / `Y` *(Botão Norte)* | `S` |
+| **L / R** | Estratégia / Tabela | `L1` / `R1` | `Q` / `W` |
+| **Start / Select** | Pausar / Opções | `Start` / `Select` | `Enter` / `Shift` |
+| **Direcionais** | Movimentação | `D-Pad` ou `Analógico Esq.` | `Setas` |
+
+---
+
+## 📁 Estrutura do Projeto
+
+```text
+charmosogauchao/
+├── .github/workflows/
+│   └── deploy.yml                                    # Pipeline CI/CD para o GitHub Pages
+├── rom/
+│   ├── ISSD - Charmoso Gauchão 2026-27 Deluxe.smc    # ROM do jogo (4.00 MB)
+│   ├── ISSD - Charmoso Gauchão 2026-27 Deluxe.zip    # ROM compactada para download (1.85 MB)
+│   └── ISSD - Charmoso Gauchão 2026-27 Deluxe.ips    # Patch IPS original (1.70 MB)
+├── index.html                                        # Aplicação web single-page (UI + Emulador + Gravador)
+├── server.js                                         # Servidor HTTP local zero-dependências
+├── package.json                                      # Metadados e script de execução local
+├── CNAME                                             # Configuração do subdomínio customizado
+├── .nojekyll                                         # Desativa processamento Jekyll no GitHub Pages
+└── LICENSE                                           # Licença GNU GPL v3.0
+```
+
+---
+
+## 💻 Como Rodar Localmente
+
+Não é necessário instalar pacotes externos (`node_modules`). Basta ter o [Node.js](https://nodejs.org/) instalado e executar:
 
 ```bash
+npm start
+# ou diretamente:
 node server.js
 ```
 
-Depois acesse `http://localhost:8080`.
+Em seguida, abra no navegador:
+👉 `http://localhost:8080`
 
-## Deploy automático via GitHub Actions
+---
 
-O projeto já possui o workflow `.github/workflows/deploy.yml` configurado para publicar automaticamente no **GitHub Pages** a cada `push` na branch `main`:
+## 🚀 Deploy Automático (GitHub Actions + GitHub Pages)
 
-1. No seu repositório do GitHub, acesse **Settings → Pages**.
-2. Em **Build and deployment → Source**, selecione **GitHub Actions**.
-3. No painel de DNS do domínio `martynfigueiredo.com`, adicione um registro:
-   - **Tipo:** `CNAME`
-   - **Nome / Host:** `charmosogauchao`
-   - **Destino / Valor:** `martynrangelfigueiredo.github.io`
-4. Faça o push para a branch `main` — a Action vai validar o `index.html`, o `CNAME` e a ROM na pasta `rom/` e publicar o site automaticamente.
+O workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) publica o pacote de produção (`_site/`) automaticamente a cada `push` na branch `main`:
+
+1. Em **Settings → Pages** no GitHub, mantenha **Source** configurado como **GitHub Actions**.
+2. Em **Custom domain**, informe `charmosogauchao.martynfigueiredo.com` e marque **Enforce HTTPS**.
+3. No provedor de DNS de `martynfigueiredo.com`, aponte um registro `CNAME` de `charmosogauchao` para `martynrangelfigueiredo.github.io`.
+
+---
+
+## 👏 Créditos
+
+- **Jogo Base:** *International Superstar Soccer Deluxe* (Konami, Super Nintendo, 1995)
+- **Patch / Modificação:** *Charmoso Gauchão 2026-27 Deluxe* — **Skinboll Patch ("For The People")**
+- **Motor de Emulação Web:** [EmulatorJS](https://emulatorjs.org/) (`snes9x` WebAssembly core)
