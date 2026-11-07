@@ -56,7 +56,7 @@
       touch-action: manipulation;
     }
 
-    /* Container fixo que evita corte da tela em navegadores mobile */
+    /* Container fixo que ocupa a altura visível real do dispositivo */
     .app-shell {
       position: fixed;
       inset: 0;
@@ -309,9 +309,6 @@
       height: calc(var(--app-height, 100dvh) - 46px);
       position: relative;
       z-index: 5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       overflow: hidden;
     }
 
@@ -324,16 +321,9 @@
     /* Deixa o fundo do EmulatorJS transparente para revelar a arte Synthwave/Grid ao redor e atrás dos botões mobile */
     #game .ejs_parent,
     .ejs_parent,
-    .ejs_game_parent {
+    .ejs_game_parent,
+    .ejs_canvas_parent {
       background: transparent !important;
-    }
-
-    #game canvas,
-    .ejs_canvas {
-      border: 1px solid rgba(255, 42, 84, 0.45);
-      box-shadow:
-        0 0 28px rgba(255, 42, 84, 0.22),
-        0 0 60px rgba(0, 0, 0, 0.85);
     }
 
     /* Efeito CRT opcional leve via GPU */
@@ -517,37 +507,6 @@
       line-height: 1.45;
     }
 
-    /* CORREÇÃO DEFINITIVA DO RECORTE NO MOBILE (Modo Retrato):
-       Fixa o canvas em proporção 4:3 exata no topo da área de jogo, evitando que o WebGL
-       crie uma faixa preta superior ou empurre a imagem para cima dos botões touch. */
-    @media (max-width: 768px) and (orientation: portrait) {
-      #game .ejs_parent {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-      }
-
-      #game .ejs_canvas_parent {
-        width: 100vw !important;
-        height: calc(100vw * 0.75) !important;
-        max-height: 46dvh !important;
-        flex: 0 0 auto !important;
-        position: relative !important;
-        top: 0 !important;
-        left: 0 !important;
-        transform: none !important;
-        background: #000 !important;
-        border-bottom: 2px solid var(--neon-red);
-      }
-
-      #game .ejs_canvas {
-        width: 100% !important;
-        height: 100% !important;
-        display: block !important;
-      }
-    }
-
     /* Ajustes da barra superior em telas Mobile */
     @media (max-width: 680px) {
       .topbar {
@@ -729,26 +688,21 @@
   </div>
 
   <script>
-    // Sincronização de viewport e redimensionamento do canvas WebGL do RetroArch
-    function syncEmulatorViewport() {
+    // Atualiza apenas a variável CSS de altura real do viewport (sem disparar evento recursivo!)
+    function updateAppHeightVar() {
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       document.documentElement.style.setProperty("--app-height", vh + "px");
-      window.dispatchEvent(new Event("resize"));
-      const emu = window.EJS_emulator;
-      if (emu && typeof emu.handleResize === "function") {
-        emu.handleResize();
-      }
     }
 
-    (function setupMobileViewportFix() {
-      syncEmulatorViewport();
-      window.addEventListener("resize", syncEmulatorViewport);
+    (function setupViewportTracking() {
+      updateAppHeightVar();
+      window.addEventListener("resize", updateAppHeightVar);
       window.addEventListener("orientationchange", function () {
-        setTimeout(syncEmulatorViewport, 100);
-        setTimeout(syncEmulatorViewport, 350);
+        setTimeout(updateAppHeightVar, 100);
+        setTimeout(updateAppHeightVar, 350);
       });
       if (window.visualViewport) {
-        window.visualViewport.addEventListener("resize", syncEmulatorViewport);
+        window.visualViewport.addEventListener("resize", updateAppHeightVar);
       }
     })();
 
@@ -813,78 +767,103 @@
     window.EJS_backgroundBlur = false;
     window.EJS_defaultControls = createSnesControllerLayout(false);
 
-    // CORREÇÃO CRÍTICA DO EMULATORJS:
-    // Por padrão, o EmulatorJS chama Module.callMain() ANTES de inserir o <canvas> no DOM,
-    // fazendo o WebGL inicializar com o canvas fora do DOM (300x150 / 0x0) e cortando metade da imagem no 1º carregamento.
-    // Aqui garantimos que o <canvas> já esteja no DOM e com tamanho real ANTES de Module.callMain() rodar,
-    // além de forçar o Emscripten a recalcular o glViewport após os primeiros frames.
-    function forceWebGLViewportRecalc() {
-      const emu = window.EJS_emulator;
-      if (!emu || !emu.canvas || !emu.game) return;
-      const rect = emu.game.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return;
+    // Garante que o <canvas> esteja inserido no DOM antes de Module.callMain() inicializar o WebGL
+    // e impede o bug do handleResize() do EmulatorJS que oculta o virtualGamepad após 250ms no mobile
+    function installEmulatorPatches(emu) {
+      if (!emu || emu._charmosoPatched) return;
+      emu._charmosoPatched = true;
 
-      // Força mudança real de 1px para que o listener do Emscripten não ignore o evento resize
-      emu.canvas.style.width = (Math.floor(rect.width) - 1) + "px";
-      emu.canvas.style.height = (Math.floor(rect.height) - 1) + "px";
-      window.dispatchEvent(new Event("resize"));
+      if (typeof emu.handleResize === "function") {
+        const origHandleResize = emu.handleResize.bind(emu);
+        emu.handleResize = function () {
+          const res = origHandleResize();
+          if (this.touch && this.started && !this.paused && this.virtualGamepad) {
+            this.virtualGamepad.style.display = "";
+            this.virtualGamepad.style.opacity = "";
+          }
+          return res;
+        };
+      }
 
-      requestAnimationFrame(function () {
-        emu.canvas.style.width = "100%";
-        emu.canvas.style.height = "100%";
-        if (emu.Module && typeof emu.Module.setCanvasSize === "function") {
-          emu.Module.setCanvasSize(Math.round(rect.width), Math.round(rect.height));
-        }
-        window.dispatchEvent(new Event("resize"));
-        if (typeof emu.handleResize === "function") {
-          emu.handleResize();
-        }
-      });
-    }
-
-    window.EJS_ready = function () {
-      try {
-        const emu = window.EJS_emulator;
-        if (!emu || typeof emu.startGame !== "function") return;
-
+      if (typeof emu.startGame === "function") {
         const origStartGame = emu.startGame.bind(emu);
         emu.startGame = function () {
           try {
-            syncEmulatorViewport();
+            updateAppHeightVar();
             if (this.game && this.canvas) {
               this.game.classList.remove("ejs_game");
               this.game.classList.add("ejs_canvas_parent");
               if (this.canvas.parentElement !== this.game) {
                 this.game.appendChild(this.canvas);
               }
-              const rect = this.game.getBoundingClientRect();
-              if (rect.width > 0 && rect.height > 0) {
-                this.canvas.width = Math.round(rect.width);
-                this.canvas.height = Math.round(rect.height);
-              }
             }
           } catch (err) {
-            console.warn("Erro ao pré-montar canvas:", err);
+            console.warn("Aviso no pre-mount do canvas:", err);
           }
-          const result = origStartGame();
-          forceWebGLViewportRecalc();
-          return result;
+          return origStartGame();
         };
-      } catch (e) {
-        console.warn("Erro no hook EJS_ready:", e);
       }
+    }
+
+    window.EJS_ready = function () {
+      installEmulatorPatches(window.EJS_emulator);
     };
 
     window.EJS_onGameStart = function () {
       try {
-        [0, 60, 180, 450, 1000, 2000].forEach(function (delay) {
-          setTimeout(function () {
-            syncEmulatorViewport();
-            forceWebGLViewportRecalc();
-          }, delay);
-        });
-
         const emu = window.EJS_emulator;
+        installEmulatorPatches(emu);
+
+        // 1. Destrava o clock de áudio do OpenAL caso o navegador bloqueie Autoplay antes do 1º clique/toque,
+        // evitando que o RetroArch congele no Frame 4 (tela preta) no primeiro carregamento!
+        const alCtx = emu && emu.Module && emu.Module.AL && emu.Module.AL.currentCtx;
+        const audioCtx = alCtx && alCtx.audioCtx;
+        if (audioCtx && audioCtx.state === "suspended") {
+          const bootTime = performance.now();
+          Object.defineProperty(audioCtx, "currentTime", {
+            configurable: true,
+            get: function () {
+              return (performance.now() - bootTime) / 1000;
+            }
+          });
+
+          function unlockRealAudio() {
+            try {
+              delete audioCtx.currentTime;
+              if (alCtx.sources) {
+                for (const id in alCtx.sources) {
+                  const src = alCtx.sources[id];
+                  if (src) {
+                    src.bufStartTime = NaN;
+                    if (Array.isArray(src.audioQueue)) src.audioQueue.length = 0;
+                  }
+                }
+              }
+              audioCtx.resume?.();
+            } catch (e) {}
+            window.removeEventListener("pointerdown", unlockRealAudio, true);
+            window.removeEventListener("touchstart", unlockRealAudio, true);
+            window.removeEventListener("keydown", unlockRealAudio, true);
+          }
+
+          window.addEventListener("pointerdown", unlockRealAudio, true);
+          window.addEventListener("touchstart", unlockRealAudio, true);
+          window.addEventListener("keydown", unlockRealAudio, true);
+        }
+
+        // 2. Garante que os controles touch do mobile fiquem visíveis (neutralizando o setTimeout de 250ms do EmulatorJS)
+        if (emu && emu.touch && emu.virtualGamepad) {
+          [0, 100, 280, 500].forEach(function (delay) {
+            setTimeout(function () {
+              if (emu.virtualGamepad && !emu.paused) {
+                emu.virtualGamepad.style.display = "";
+                emu.virtualGamepad.style.opacity = "";
+              }
+            }, delay);
+          });
+        }
+
+        // 3. Aplica o mapeamento posicional fiel ao controle de SNES
         if (emu && !localStorage.getItem("charmoso_snes_layout_v2")) {
           emu.controls = createSnesControllerLayout(false);
           if (typeof emu.setupKeys === "function") emu.setupKeys();
@@ -893,7 +872,7 @@
           localStorage.setItem("charmoso_snes_layout_v2", "1");
         }
       } catch (e) {
-        console.warn("Não foi possível atualizar configurações pós-boot:", e);
+        console.warn("Não foi possível concluir ajustes pós-boot:", e);
       }
     };
 
@@ -935,7 +914,6 @@
         const yyyy = now.getFullYear();
         const hh = String(now.getHours()).padStart(2, "0");
         const min = String(now.getMinutes()).padStart(2, "0");
-        // Nota: navegadores convertem "/" em "-" ao salvar arquivos no sistema operacional
         return "ISSD - Charmoso Gauchão 2026-27 - " + dd + "-" + mm + "-" + yyyy + " " + hh + "h" + min + "." + ext;
       }
 
@@ -984,7 +962,7 @@
             sx = (cw - sw) / 2;
           } else if (currentAspect < targetAspect) {
             sh = cw / targetAspect;
-            sy = (ch - sh) / 2;
+            sy = 0; // No modo retrato mobile (video_top_portrait_viewport = true), o jogo fica alinhado no topo (y = 0)
           }
 
           ctx.fillStyle = "#000";
@@ -994,7 +972,6 @@
         }
         requestAnimationFrame(renderFrame);
 
-        // Coleta vídeo 60fps + áudio estéreo do emulador
         let stream = null;
         if (emu && typeof emu.collectScreenRecordingMediaTracks === "function") {
           stream = emu.collectScreenRecordingMediaTracks(recCanvas, 60);
