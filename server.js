@@ -17,6 +17,7 @@ const MIME_TYPES = {
   ".smc": "application/octet-stream",
   ".sfc": "application/octet-stream",
   ".ips": "application/octet-stream",
+  ".zip": "application/zip",
 };
 
 const server = http.createServer((req, res) => {

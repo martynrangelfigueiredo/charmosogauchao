@@ -203,6 +203,7 @@
     /* Botões estilo Retro-HUD Brutalista */
     .btn {
       appearance: none;
+      text-decoration: none;
       background: #160d29;
       color: var(--text);
       border: 1px solid rgba(255, 255, 255, 0.28);
@@ -293,6 +294,19 @@
       background: rgba(255, 184, 0, 0.35);
       border-color: #fde047;
       box-shadow: 2px 2px 0 var(--neon-gold);
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 155, 58, 0.25));
+      border-color: var(--neon-cyan);
+      color: #cffafe;
+      box-shadow: 2px 2px 0 rgba(0, 240, 255, 0.6);
+    }
+
+    .btn-download:hover {
+      background: rgba(0, 240, 255, 0.32);
+      border-color: #67e8f9;
+      box-shadow: 2px 2px 0 var(--neon-cyan);
     }
 
     .btn.active {
@@ -557,6 +571,10 @@
       </div>
 
       <div class="actions">
+        <a class="btn btn-download" href="rom/ISSD%20-%20Charmoso%20Gauch%C3%A3o%202026-27%20Deluxe.zip" download="ISSD - Charmoso Gauchão 2026-27 Deluxe.zip" title="Baixar ROM (.zip) para jogar em qualquer emulador de SNES">
+          <span>⬇️</span>
+          <span>ROM</span>
+        </a>
         <button type="button" class="btn btn-record" id="btn-record" title="Gravar partida e baixar vídeo automaticamente ao parar">
           <span class="rec-dot"></span>
           <span id="record-label">Gravar</span>
@@ -682,6 +700,12 @@
             <li><strong>Chapéu / Drible Aéreo:</strong> Aperte <kbd>B + A</kbd> juntos ao dominar a bola.</li>
             <li><strong>Sair com o Goleiro:</strong> Segure <kbd>X</kbd> (botão de cima) quando o adversário estiver atacando.</li>
           </ul>
+        </div>
+
+        <div class="modal-actions">
+          <a class="btn btn-download" href="rom/ISSD%20-%20Charmoso%20Gauch%C3%A3o%202026-27%20Deluxe.zip" download="ISSD - Charmoso Gauchão 2026-27 Deluxe.zip">
+            ⬇️ Baixar ROM (.ZIP • 1.85 MB)
+          </a>
         </div>
       </div>
     </div>
