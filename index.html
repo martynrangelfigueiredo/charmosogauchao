@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>ISSD - Charmoso Gauchão 2026/27 Deluxe | Jogar Online (SNES)</title>
+  <meta name="description" content="Jogue International Superstar Soccer Deluxe - Charmoso Gauchão 2026-27 Deluxe diretamente no navegador em 60 FPS." />
+  <meta name="theme-color" content="#090d10" />
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://charmosogauchao.martynfigueiredo.com/" />
+  <meta property="og:title" content="ISSD - Charmoso Gauchão 2026/27 Deluxe (SNES)" />
+  <meta property="og:description" content="Jogue International Superstar Soccer Deluxe - Charmoso Gauchão 2026-27 Deluxe direto no navegador!" />
+
+  <!-- Performance: Preconnect & Preload ROM + Emulator Loader -->
+  <link rel="preconnect" href="https://cdn.emulatorjs.org" crossorigin />
+  <link rel="dns-prefetch" href="https://cdn.emulatorjs.org" />
+  <link rel="preload" href="https://cdn.emulatorjs.org/stable/data/loader.js" as="script" />
+  <link rel="preload" href="rom/ISSD%20-%20Charmoso%20Gauch%C3%A3o%202026-27%20Deluxe.smc" as="fetch" crossorigin />
+
+  <!-- Favicon SVG inline -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1215'/%3E%3Cpath d='M8 20h48v8H8z' fill='%23008751'/%3E%3Cpath d='M8 28h48v8H8z' fill='%23da291c'/%3E%3Cpath d='M8 36h48v8H8z' fill='%23f3c300'/%3E%3Ccircle cx='32' cy='32' r='11' fill='%23ffffff' stroke='%230b1215' stroke-width='3'/%3E%3C/svg%3E" />
+
+  <style>
+    :root {
+      --bg: #070a0d;
+      --surface: rgba(15, 21, 26, 0.88);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --rs-green: #009b3a;
+      --rs-red: #da291c;
+      --rs-yellow: #fedf00;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+      user-select: none;
+    }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100dvh;
+      position: relative;
+      background:
+        radial-gradient(circle at 18% 15%, rgba(0, 155, 58, 0.12), transparent 40%),
+        radial-gradient(circle at 82% 85%, rgba(218, 41, 28, 0.12), transparent 40%),
+        var(--bg);
+    }
+
+    /* Barra superior compacta com cores do RS */
+    .topbar {
+      height: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+      z-index: 20;
+      position: relative;
+    }
+
+    .topbar::after {
+      content: "";
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--rs-green) 0% 33.3%, var(--rs-red) 33.3% 66.6%, var(--rs-yellow) 66.6% 100%);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .badge-rs {
+      display: inline-flex;
+      width: 18px;
+      height: 12px;
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+    }
+
+    .badge-rs span:nth-child(1) { flex: 1; background: var(--rs-green); }
+    .badge-rs span:nth-child(2) { flex: 1; background: var(--rs-red); }
+    .badge-rs span:nth-child(3) { flex: 1; background: var(--rs-yellow); }
+
+    .subtitle {
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 0.78rem;
+      padding-left: 6px;
+      border-left: 1px solid var(--border);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      appearance: none;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.24);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn.active {
+      background: rgba(0, 155, 58, 0.25);
+      border-color: var(--rs-green);
+      color: #a7f3d0;
+    }
+
+    /* Área principal do emulador */
+    .stage {
+      flex: 1;
+      width: 100%;
+      height: calc(100dvh - 44px);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #game {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Efeito CRT opcional leve via GPU */
+    .stage.crt::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%,
+        rgba(0, 0, 0, 0.28) 50%
+      );
+      background-size: 100% 4px;
+    }
+
+    /* Modal de Controles */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: #111820;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      max-width: 440px;
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 14px;
+      font-size: 0.84rem;
+    }
+
+    .control-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 6px;
+    }
+
+    kbd {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.76rem;
+      color: #f8fafc;
+    }
+
+    .modal-note {
+      margin-top: 14px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    @media (max-width: 600px) {
+      .subtitle, .btn-label-hide-mobile {
+        display: none;
+      }
+      .controls-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="badge-rs" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <span>Charmoso Gauchão 2026/27 Deluxe</span>
+        <span class="subtitle">ISSD • Super Nintendo</span>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn" id="btn-crt" title="Alternar efeito de TV de Tubo (Scanlines)">
+          <span>CRT</span>
+        </button>
+        <button type="button" class="btn" id="btn-controls" title="Ver atalhos do teclado e controle">
+          <span>Controles</span>
+        </button>
+        <button type="button" class="btn" id="btn-fullscreen" title="Tela Cheia">
+          <span>Tela Cheia</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage">
+      <div id="game"></div>
+    </main>
+  </div>
+
+  <!-- Modal rápido de controles -->
+  <div class="modal-backdrop" id="controls-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">Controles Padrão (SNES)</h2>
+        <button type="button" class="btn" id="btn-close-modal">Fechar</button>
+      </div>
+      <div class="controls-grid">
+        <div class="control-item"><span>Direcionais</span> <kbd>Setas</kbd></div>
+        <div class="control-item"><span>Start</span> <kbd>Enter</kbd></div>
+        <div class="control-item"><span>Select</span> <kbd>Shift</kbd></div>
+        <div class="control-item"><span>Botão B (Passe)</span> <kbd>Z</kbd></div>
+        <div class="control-item"><span>Botão A (Cruzamento)</span> <kbd>X</kbd></div>
+        <div class="control-item"><span>Botão Y (Chute/Corrida)</span> <kbd>A</kbd></div>
+        <div class="control-item"><span>Botão X (Lançamento)</span> <kbd>S</kbd></div>
+        <div class="control-item"><span>Botões L / R</span> <kbd>Q</kbd> / <kbd>W</kbd></div>
+      </div>
+      <p class="modal-note">
+        💡 <strong>Joysticks USB/Bluetooth</strong> (Xbox, PlayStation, 8BitDo) são reconhecidos automaticamente ao pressionar qualquer botão. Você também pode reconfigurar teclas na barra inferior do emulador.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Configuração de alta performance do EmulatorJS com boot automático
+    window.EJS_player = "#game";
+    window.EJS_core = "snes";
+    window.EJS_gameName = "ISSD - Charmoso Gauchão 2026-27 Deluxe";
+    window.EJS_gameUrl = encodeURI("rom/ISSD - Charmoso Gauchão 2026-27 Deluxe.smc");
+    window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
+    window.EJS_color = "#009b3a";
+    window.EJS_startOnLoaded = true;
+    window.EJS_language = "pt-BR";
+    window.EJS_threads = false;
+    window.EJS_backgroundBlur = false;
+
+    // Utilitários de UI (CRT, Tela Cheia e Modal de Controles)
+    (function () {
+      const stage = document.getElementById("stage");
+      const btnCrt = document.getElementById("btn-crt");
+      const btnFullscreen = document.getElementById("btn-fullscreen");
+      const btnControls = document.getElementById("btn-controls");
+      const btnCloseModal = document.getElementById("btn-close-modal");
+      const modal = document.getElementById("controls-modal");
+
+      btnCrt.addEventListener("click", function () {
+        const active = stage.classList.toggle("crt");
+        btnCrt.classList.toggle("active", active);
+      });
+
+      btnFullscreen.addEventListener("click", function () {
+        const elem = document.documentElement;
+        if (!document.fullscreenElement) {
+          elem.requestFullscreen?.();
+        } else {
+          document.exitFullscreen?.();
+        }
+      });
+
+      btnControls.addEventListener("click", function () {
+        modal.classList.add("open");
+      });
+
+      btnCloseModal.addEventListener("click", function () {
+        modal.classList.remove("open");
+      });
+
+      modal.addEventListener("click", function (e) {
+        if (e.target === modal) modal.classList.remove("open");
+      });
+
+      window.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && modal.classList.contains("open")) {
+          modal.classList.remove("open");
+        }
+      });
+    })();
+  </script>
+  <script src="https://cdn.emulatorjs.org/stable/data/loader.js" async></script>
+</body>
+</html>
+

@@ -1,0 +1,11 @@
+{
+  "name": "charmosogauchao",
+  "version": "1.0.0",
+  "description": "ISSD - Charmoso Gauchão 2026-27 Deluxe (SNES Web Player)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "private": true
+}
+
