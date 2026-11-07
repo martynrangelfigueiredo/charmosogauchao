@@ -26,7 +26,7 @@
     :root {
       --app-height: 100dvh;
       --bg-deep: #080410;
-      --bg-panel: rgba(14, 9, 26, 0.92);
+      --bg-panel: rgba(14, 9, 26, 0.94);
       --border-cyber: rgba(255, 42, 84, 0.42);
       --border-subtle: rgba(255, 255, 255, 0.14);
       --text: #f8fafc;
@@ -95,12 +95,12 @@
       pointer-events: none;
       z-index: 0;
       background-image:
-        linear-gradient(to right, rgba(255, 42, 84, 0.26) 1px, transparent 1px),
+        linear-gradient(to right, rgba(255, 42, 84, 0.28) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 184, 0, 0.22) 1px, transparent 1px);
       background-size: 48px 32px;
       transform: perspective(360px) rotateX(62deg);
-      mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9) 10%, transparent 95%);
-      -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9) 10%, transparent 95%);
+      mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.95) 10%, transparent 95%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.95) 10%, transparent 95%);
     }
 
     /* Vignette + moldura sutil de monitor retrô */
@@ -121,11 +121,11 @@
       justify-content: space-between;
       gap: 8px;
       padding: 0 12px;
-      background: rgba(10, 6, 20, 0.9);
+      background: rgba(10, 6, 20, 0.92);
       border-bottom: 2px solid var(--neon-red);
       box-shadow: 0 4px 20px rgba(255, 42, 84, 0.22);
       backdrop-filter: blur(10px);
-      z-index: 20;
+      z-index: 30;
       position: relative;
     }
 
@@ -244,6 +244,40 @@
       background: rgba(0, 229, 117, 0.36);
       border-color: #6ee7b7;
       box-shadow: 2px 2px 0 var(--neon-green);
+    }
+
+    .btn-record {
+      background: linear-gradient(135deg, rgba(255, 42, 84, 0.26), rgba(153, 27, 27, 0.36));
+      border-color: var(--neon-red);
+      color: #ffe4e6;
+      box-shadow: 2px 2px 0 rgba(255, 42, 84, 0.7);
+    }
+
+    .btn-record.recording {
+      background: var(--neon-red);
+      color: #ffffff;
+      border-color: #ffffff;
+      box-shadow: 0 0 14px var(--neon-red);
+      animation: pulse-record 1s infinite alternate;
+    }
+
+    @keyframes pulse-record {
+      from { opacity: 1; transform: scale(1); }
+      to { opacity: 0.82; transform: scale(0.98); }
+    }
+
+    .rec-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--neon-red);
+      display: inline-block;
+      box-shadow: 0 0 6px var(--neon-red);
+    }
+
+    .btn-record.recording .rec-dot {
+      background: #ffffff;
+      box-shadow: 0 0 6px #ffffff;
     }
 
     .btn-info {
@@ -483,7 +517,38 @@
       line-height: 1.45;
     }
 
-    /* Otimizações específicas para telas Mobile */
+    /* CORREÇÃO DEFINITIVA DO RECORTE NO MOBILE (Modo Retrato):
+       Fixa o canvas em proporção 4:3 exata no topo da área de jogo, evitando que o WebGL
+       crie uma faixa preta superior ou empurre a imagem para cima dos botões touch. */
+    @media (max-width: 768px) and (orientation: portrait) {
+      #game .ejs_parent {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+      }
+
+      #game .ejs_canvas_parent {
+        width: 100vw !important;
+        height: calc(100vw * 0.75) !important;
+        max-height: 46dvh !important;
+        flex: 0 0 auto !important;
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        background: #000 !important;
+        border-bottom: 2px solid var(--neon-red);
+      }
+
+      #game .ejs_canvas {
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+      }
+    }
+
+    /* Ajustes da barra superior em telas Mobile */
     @media (max-width: 680px) {
       .topbar {
         height: 40px;
@@ -502,12 +567,12 @@
       }
 
       .brand-title {
-        font-size: 0.74rem;
+        font-size: 0.72rem;
       }
 
       .btn {
-        padding: 4px 7px;
-        font-size: 0.68rem;
+        padding: 4px 6px;
+        font-size: 0.67rem;
         box-shadow: 1px 1px 0 rgba(255, 42, 84, 0.65);
       }
 
@@ -533,9 +598,13 @@
       </div>
 
       <div class="actions">
+        <button type="button" class="btn btn-record" id="btn-record" title="Gravar partida e baixar vídeo automaticamente ao parar">
+          <span class="rec-dot"></span>
+          <span id="record-label">Gravar</span>
+        </button>
         <button type="button" class="btn btn-primary" id="btn-remap" title="Editar botões do Controle ou Teclado">
           <span>⚙️</span>
-          <span>Botões</span>
+          <span class="hide-mobile">Botões</span>
         </button>
         <button type="button" class="btn" id="btn-controls" title="Ver mapa de comandos do jogo">
           <span>🎮</span>
@@ -660,20 +729,26 @@
   </div>
 
   <script>
-    // Ajuste dinâmico de altura real no Mobile (evita corte da tela pela barra de endereço)
-    (function setupMobileViewportFix() {
-      function updateViewportHeight() {
-        const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-        document.documentElement.style.setProperty("--app-height", vh + "px");
-        window.dispatchEvent(new Event("resize"));
+    // Sincronização de viewport e redimensionamento do canvas WebGL do RetroArch
+    function syncEmulatorViewport() {
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      document.documentElement.style.setProperty("--app-height", vh + "px");
+      window.dispatchEvent(new Event("resize"));
+      const emu = window.EJS_emulator;
+      if (emu && typeof emu.handleResize === "function") {
+        emu.handleResize();
       }
-      updateViewportHeight();
-      window.addEventListener("resize", updateViewportHeight);
+    }
+
+    (function setupMobileViewportFix() {
+      syncEmulatorViewport();
+      window.addEventListener("resize", syncEmulatorViewport);
       window.addEventListener("orientationchange", function () {
-        setTimeout(updateViewportHeight, 150);
+        setTimeout(syncEmulatorViewport, 100);
+        setTimeout(syncEmulatorViewport, 350);
       });
       if (window.visualViewport) {
-        window.visualViewport.addEventListener("resize", updateViewportHeight);
+        window.visualViewport.addEventListener("resize", syncEmulatorViewport);
       }
     })();
 
@@ -740,8 +815,11 @@
 
     window.EJS_onGameStart = function () {
       try {
-        // Recalcula dimensões após iniciar para garantir encaixe perfeito no mobile
-        window.dispatchEvent(new Event("resize"));
+        // Dispara múltiplos pulsos de resize após o boot do WebGL para garantir que o viewport 4:3 nunca corte no 1º carregamento
+        [0, 80, 250, 600, 1200].forEach(function (delay) {
+          setTimeout(syncEmulatorViewport, delay);
+        });
+
         const emu = window.EJS_emulator;
         if (emu && !localStorage.getItem("charmoso_snes_layout_v2")) {
           emu.controls = createSnesControllerLayout(false);
@@ -751,13 +829,15 @@
           localStorage.setItem("charmoso_snes_layout_v2", "1");
         }
       } catch (e) {
-        console.warn("Não foi possível atualizar controles automaticamente:", e);
+        console.warn("Não foi possível atualizar configurações pós-boot:", e);
       }
     };
 
-    // Controles da Interface (Editor de Botões, Modal ?, Modal Comandos, CRT e Tela Cheia)
+    // Controles da Interface + Gravador de Partidas com Download Automático
     (function () {
       const stage = document.getElementById("stage");
+      const btnRecord = document.getElementById("btn-record");
+      const recordLabel = document.getElementById("record-label");
       const btnCrt = document.getElementById("btn-crt");
       const btnFullscreen = document.getElementById("btn-fullscreen");
       const btnControls = document.getElementById("btn-controls");
@@ -770,6 +850,164 @@
       const controlsModal = document.getElementById("controls-modal");
       const infoModal = document.getElementById("info-modal");
       let isSwapped = false;
+
+      // Estado do Gravador de Partidas
+      let mediaRecorder = null;
+      let recordedChunks = [];
+      let recordingTimer = null;
+      let recordingSeconds = 0;
+      let recordingCleanup = null;
+
+      function formatDuration(sec) {
+        const m = String(Math.floor(sec / 60)).padStart(2, "0");
+        const s = String(sec % 60).padStart(2, "0");
+        return m + ":" + s;
+      }
+
+      function buildDownloadFileName(ext) {
+        const now = new Date();
+        const dd = String(now.getDate()).padStart(2, "0");
+        const mm = String(now.getMonth() + 1).padStart(2, "0");
+        const yyyy = now.getFullYear();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const min = String(now.getMinutes()).padStart(2, "0");
+        // Nota: navegadores convertem "/" em "-" ao salvar arquivos no sistema operacional
+        return "ISSD - Charmoso Gauchão 2026-27 - " + dd + "-" + mm + "-" + yyyy + " " + hh + "h" + min + "." + ext;
+      }
+
+      function getSupportedRecordingMime() {
+        const candidates = [
+          { mime: "video/mp4;codecs=avc1.42E01E,mp4a.40.2", ext: "mp4" },
+          { mime: "video/mp4", ext: "mp4" },
+          { mime: "video/webm;codecs=vp9,opus", ext: "webm" },
+          { mime: "video/webm;codecs=vp8,opus", ext: "webm" },
+          { mime: "video/webm", ext: "webm" }
+        ];
+        for (let i = 0; i < candidates.length; i++) {
+          if (window.MediaRecorder && MediaRecorder.isTypeSupported(candidates[i].mime)) {
+            return candidates[i];
+          }
+        }
+        return { mime: "", ext: "webm" };
+      }
+
+      function startRecording() {
+        const emu = window.EJS_emulator;
+        const sourceCanvas = (emu && emu.canvas) || document.querySelector(".ejs_canvas");
+        if (!sourceCanvas) {
+          alert("Aguarde o jogo iniciar para começar a gravação.");
+          return;
+        }
+
+        // Cria um canvas 4:3 dedicado (640x480) para gravar a imagem limpa sem bordas pretas externas
+        const recCanvas = document.createElement("canvas");
+        recCanvas.width = 640;
+        recCanvas.height = 480;
+        const ctx = recCanvas.getContext("2d", { alpha: false });
+        ctx.imageSmoothingEnabled = false;
+
+        let active = true;
+        function renderFrame() {
+          if (!active) return;
+          const cw = sourceCanvas.width || 640;
+          const ch = sourceCanvas.height || 480;
+          const targetAspect = 4 / 3;
+          const currentAspect = cw / ch;
+          let sx = 0, sy = 0, sw = cw, sh = ch;
+
+          if (currentAspect > targetAspect) {
+            sw = ch * targetAspect;
+            sx = (cw - sw) / 2;
+          } else if (currentAspect < targetAspect) {
+            sh = cw / targetAspect;
+            sy = (ch - sh) / 2;
+          }
+
+          ctx.fillStyle = "#000";
+          ctx.fillRect(0, 0, recCanvas.width, recCanvas.height);
+          ctx.drawImage(sourceCanvas, sx, sy, sw, sh, 0, 0, recCanvas.width, recCanvas.height);
+          requestAnimationFrame(renderFrame);
+        }
+        requestAnimationFrame(renderFrame);
+
+        // Coleta vídeo 60fps + áudio estéreo do emulador
+        let stream = null;
+        if (emu && typeof emu.collectScreenRecordingMediaTracks === "function") {
+          stream = emu.collectScreenRecordingMediaTracks(recCanvas, 60);
+        }
+        if (!stream) {
+          stream = recCanvas.captureStream(60);
+        }
+
+        const formatInfo = getSupportedRecordingMime();
+        const options = { videoBitsPerSecond: 6000000 };
+        if (formatInfo.mime) {
+          options.mimeType = formatInfo.mime;
+        }
+
+        recordedChunks = [];
+        try {
+          mediaRecorder = new MediaRecorder(stream, options);
+        } catch (err) {
+          mediaRecorder = new MediaRecorder(stream);
+        }
+
+        mediaRecorder.addEventListener("dataavailable", function (e) {
+          if (e.data && e.data.size > 0) {
+            recordedChunks.push(e.data);
+          }
+        });
+
+        mediaRecorder.addEventListener("stop", function () {
+          active = false;
+          if (recordingCleanup) recordingCleanup();
+
+          const blob = new Blob(recordedChunks, { type: formatInfo.mime || "video/webm" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.style.display = "none";
+          a.href = url;
+          a.download = buildDownloadFileName(formatInfo.ext);
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function () {
+            URL.revokeObjectURL(url);
+            a.remove();
+          }, 2000);
+        });
+
+        recordingCleanup = function () {
+          clearInterval(recordingTimer);
+          recordingTimer = null;
+          recordingSeconds = 0;
+          btnRecord.classList.remove("recording");
+          recordLabel.textContent = "Gravar";
+          recCanvas.remove();
+        };
+
+        mediaRecorder.start(1000);
+        btnRecord.classList.add("recording");
+        recordingSeconds = 0;
+        recordLabel.textContent = "Parar (00:00)";
+        recordingTimer = setInterval(function () {
+          recordingSeconds++;
+          recordLabel.textContent = "Parar (" + formatDuration(recordingSeconds) + ")";
+        }, 1000);
+      }
+
+      function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+          mediaRecorder.stop();
+        }
+      }
+
+      btnRecord.addEventListener("click", function () {
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+          stopRecording();
+        } else {
+          startRecording();
+        }
+      });
 
       function closeAllModals() {
         controlsModal.classList.remove("open");
