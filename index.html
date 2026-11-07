@@ -116,7 +116,7 @@
       box-shadow: inset 0 0 75px rgba(20, 6, 42, 0.55);
     }
 
-    /* Barra superior Neo-Retro Roxa */
+    /* Barra superior Neo-Retro Roxa (sem backdrop-filter para máxima performance de GPU em 60 FPS) */
     .topbar {
       height: 48px;
       min-height: 48px;
@@ -125,12 +125,12 @@
       justify-content: space-between;
       gap: 10px;
       padding: 0 12px;
-      background: linear-gradient(90deg, rgba(48, 20, 92, 0.96), rgba(66, 26, 122, 0.96));
+      background: linear-gradient(90deg, #30145c, #421a7a);
       border-bottom: 2px solid var(--neon-purple);
-      box-shadow: 0 4px 20px rgba(109, 40, 217, 0.45);
-      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(109, 40, 217, 0.45);
       z-index: 40;
       position: relative;
+      contain: layout style;
     }
 
     .topbar::after {
@@ -262,7 +262,7 @@
       top: calc(100% + 10px);
       right: 0;
       width: 280px;
-      background: var(--bg-panel);
+      background: #2b1352;
       border: 2px solid var(--neon-purple);
       border-radius: 8px;
       box-shadow:
@@ -273,7 +273,6 @@
       flex-direction: column;
       gap: 6px;
       z-index: 80;
-      backdrop-filter: blur(12px);
     }
 
     .menu-dropdown.open {
@@ -909,6 +908,36 @@
       };
     }
 
+    // OTIMIZAÇÃO DE HARDWARE (WebAudio Low-Latency + WebGL High-Performance)
+    // Intercepta a criação do AudioContext e WebGL antes do Emscripten/RetroArch iniciar
+    (function setupHardwareAcceleration() {
+      const OrigAudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (OrigAudioCtx) {
+        const LowLatencyAudioContext = function (opts) {
+          const mergedOpts = Object.assign({ latencyHint: "interactive" }, opts || {});
+          return new OrigAudioCtx(mergedOpts);
+        };
+        LowLatencyAudioContext.prototype = OrigAudioCtx.prototype;
+        Object.setPrototypeOf(LowLatencyAudioContext, OrigAudioCtx);
+        if (window.AudioContext) window.AudioContext = LowLatencyAudioContext;
+        if (window.webkitAudioContext) window.webkitAudioContext = LowLatencyAudioContext;
+      }
+
+      const origGetContext = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (type, attrs) {
+        if (type === "webgl" || type === "webgl2" || type === "experimental-webgl") {
+          attrs = Object.assign(
+            {
+              powerPreference: "high-performance",
+              antialias: false
+            },
+            attrs || {}
+          );
+        }
+        return origGetContext.call(this, type, attrs);
+      };
+    })();
+
     // Configuração de alta performance do EmulatorJS com boot automático e layout SNES real
     window.EJS_player = "#game";
     window.EJS_core = "snes";
@@ -922,26 +951,39 @@
     window.EJS_backgroundBlur = false;
     window.EJS_defaultControls = createSnesControllerLayout(false);
 
-    // Recorta as barras pretas do canvas WebGL fora do viewport 4:3 para exibir o fundo Roxo Synth-Grid
+    // Recorta as barras pretas do canvas WebGL fora do viewport 4:3 usando apenas cálculo geométrico puro (zero chamadas WebGL / zero travamentos de GPU)
     function syncCanvasClipToViewport() {
       try {
         const emu = window.EJS_emulator;
         const canvas = (emu && emu.canvas) || document.querySelector(".ejs_canvas");
-        if (!canvas || !canvas.width || !canvas.height) return;
-        const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
-        if (!gl) return;
-        if (gl.getParameter(gl.FRAMEBUFFER_BINDING) !== null) return;
-        const vp = gl.getParameter(gl.VIEWPORT);
-        if (!vp || vp[2] <= 0 || vp[3] <= 0) return;
+        if (!canvas) return;
 
-        const cw = canvas.width;
-        const ch = canvas.height;
-        const vx = vp[0], vy = vp[1], vw = vp[2], vh = vp[3];
+        const cw = canvas.clientWidth || canvas.width;
+        const ch = canvas.clientHeight || canvas.height;
+        if (!cw || !ch) return;
 
-        const topPct    = Math.max(0, ((ch - (vy + vh)) / ch) * 100);
-        const rightPct  = Math.max(0, ((cw - (vx + vw)) / cw) * 100);
-        const bottomPct = Math.max(0, (vy / ch) * 100);
-        const leftPct   = Math.max(0, (vx / cw) * 100);
+        const targetAspect = 4 / 3;
+        let topPct = 0, rightPct = 0, bottomPct = 0, leftPct = 0;
+
+        if (cw < ch) {
+          // Modo retrato mobile (video_top_portrait_viewport = true): tela 4:3 colada no topo
+          const gameH = Math.min(ch, cw / targetAspect);
+          bottomPct = Math.max(0, ((ch - gameH) / ch) * 100);
+        } else {
+          // Modo paisagem / Desktop: tela 4:3 centralizada
+          const currentAspect = cw / ch;
+          if (currentAspect > targetAspect) {
+            const gameW = ch * targetAspect;
+            const sidePct = Math.max(0, (((cw - gameW) / 2) / cw) * 100);
+            leftPct = sidePct;
+            rightPct = sidePct;
+          } else if (currentAspect < targetAspect) {
+            const gameH = cw / targetAspect;
+            const vertPct = Math.max(0, (((ch - gameH) / 2) / ch) * 100);
+            topPct = vertPct;
+            bottomPct = vertPct;
+          }
+        }
 
         canvas.style.clipPath =
           "inset(" +
@@ -952,8 +994,11 @@
       } catch (e) {}
     }
 
-    // Garante que o <canvas> esteja inserido no DOM antes de Module.callMain() inicializar o WebGL
-    // e impede o bug do handleResize() do EmulatorJS que oculta o virtualGamepad após 250ms no mobile
+    window.addEventListener("resize", function () {
+      requestAnimationFrame(syncCanvasClipToViewport);
+    });
+
+    // Ajustes de máxima performance no retroarch.cfg, montagem antecipada do <canvas> e proteção dos controles mobile
     function installEmulatorPatches(emu) {
       if (!emu || emu._charmosoPatched) return;
       emu._charmosoPatched = true;
@@ -966,8 +1011,7 @@
             this.virtualGamepad.style.display = "";
             this.virtualGamepad.style.opacity = "";
           }
-          setTimeout(syncCanvasClipToViewport, 60);
-          setTimeout(syncCanvasClipToViewport, 280);
+          requestAnimationFrame(syncCanvasClipToViewport);
           return res;
         };
       }
@@ -977,6 +1021,44 @@
         emu.startGame = function () {
           try {
             updateAppHeightVar();
+
+            // 1. Otimiza o retroarch.cfg antes do callMain() para eliminar atraso/engasgo de áudio e maximizar FPS
+            if (this.gameManager && this.gameManager.FS) {
+              const cfgPath = "/home/web_user/.config/retroarch/retroarch.cfg";
+              let baseCfg = "";
+              try {
+                baseCfg = new TextDecoder().decode(this.gameManager.FS.readFile(cfgPath));
+              } catch (e) {
+                if (typeof this.gameManager.getRetroArchCfg === "function") {
+                  baseCfg = this.gameManager.getRetroArchCfg();
+                }
+              }
+
+              // Substitui/adiciona parâmetros críticos de baixa latência de áudio e performance máxima
+              baseCfg = baseCfg
+                .replace(/audio_latency\s*=\s*\d+/g, "audio_latency = 40")
+                .replace(/autosave_interval\s*=\s*\d+/g, "autosave_interval = 0");
+
+              const perfOverrides = [
+                "audio_latency = 40",
+                "audio_sync = false",
+                "audio_rate_control = true",
+                "audio_rate_control_delta = 0.006",
+                'audio_resampler = "nearest"',
+                "audio_block_frames = 0",
+                "video_vsync = true",
+                "video_threaded = false",
+                "video_smooth = false",
+                "video_shader_enable = false",
+                "rewind_enable = false",
+                "run_ahead_enabled = false",
+                "vrr_runloop_enable = false"
+              ].join("\n") + "\n";
+
+              this.gameManager.writeFile(cfgPath, baseCfg + "\n" + perfOverrides);
+            }
+
+            // 2. Insere o <canvas> no DOM antes de Module.callMain() inicializar o WebGL
             if (this.game && this.canvas) {
               this.game.classList.remove("ejs_game");
               this.game.classList.add("ejs_canvas_parent");
@@ -985,7 +1067,7 @@
               }
             }
           } catch (err) {
-            console.warn("Aviso no pre-mount do canvas:", err);
+            console.warn("Aviso no pre-start de performance:", err);
           }
           return origStartGame();
         };
@@ -1001,10 +1083,78 @@
         const emu = window.EJS_emulator;
         installEmulatorPatches(emu);
 
-        // 1. Destrava o clock de áudio do OpenAL caso o navegador bloqueie Autoplay antes do 1º clique/toque,
-        // evitando que o RetroArch congele no Frame 4 (tela preta) no primeiro carregamento!
-        const alCtx = emu && emu.Module && emu.Module.AL && emu.Module.AL.currentCtx;
+        const AL = emu && emu.Module && emu.Module.AL;
+        const alCtx = AL && AL.currentCtx;
         const audioCtx = alCtx && alCtx.audioCtx;
+
+        // 1. Otimiza o agendador OpenAL do Emscripten (baixa latência + anti-drift / anti-atraso)
+        if (AL) {
+          // Reduz o lookahead padrão de 100ms (0.1s) para 42ms (0.042s) e o intervalo de 25ms para 12ms
+          AL.QUEUE_LOOKAHEAD = 0.042;
+          AL.QUEUE_INTERVAL = 12;
+          if (alCtx && alCtx.interval && typeof AL.scheduleContextAudio === "function") {
+            clearInterval(alCtx.interval);
+            alCtx.interval = setInterval(function () {
+              AL.scheduleContextAudio(alCtx);
+            }, 12);
+          }
+
+          if (typeof AL.scheduleSourceAudio === "function" && !AL._charmosoLowLatencyPatched) {
+            AL._charmosoLowLatencyPatched = true;
+            const origScheduleSourceAudio = AL.scheduleSourceAudio.bind(AL);
+
+            AL.scheduleSourceAudio = function (src, lookahead) {
+              if (!src || !src.context || !src.context.audioCtx) return;
+              const ctx = src.context.audioCtx;
+
+              // Enquanto o navegador bloquear Autoplay (suspended), consome a fila silenciosamente
+              // sem criar AudioBufferSourceNodes acumulados (evita som embolado ao destravar!)
+              if (ctx.state === "suspended") {
+                if (src.bufQueue && src.bufQueue.length > 0) {
+                  src.bufsProcessed = src.bufQueue.length;
+                }
+                src.bufStartTime = ctx.currentTime;
+                src.bufOffset = 0;
+                if (Array.isArray(src.audioQueue) && src.audioQueue.length > 0) {
+                  src.audioQueue.length = 0;
+                }
+                return;
+              }
+
+              // Proteção Anti-Drift: se um pico de frames ou troca de aba acumular muitos buffers na fila (> 4),
+              // descarta o atraso antigo para manter o áudio sempre colado na imagem em tempo real!
+              if (src.bufQueue && src.bufQueue.length - src.bufsProcessed > 4) {
+                src.bufsProcessed = Math.max(0, src.bufQueue.length - 2);
+              }
+
+              // Se a fila WebAudio agendada estiver mais de 85ms à frente do relógio real, ressincroniza
+              if (Array.isArray(src.audioQueue) && src.audioQueue.length > 0) {
+                const lastNode = src.audioQueue[src.audioQueue.length - 1];
+                const tailTime = (lastNode._startTime || 0) + (lastNode._duration || 0);
+                if (tailTime - ctx.currentTime > 0.085) {
+                  while (src.audioQueue.length > 2) {
+                    const dropped = src.audioQueue.pop();
+                    try {
+                      dropped.stop();
+                      dropped.disconnect();
+                    } catch (e) {}
+                  }
+                  if (src.audioQueue.length > 0) {
+                    const latest = src.audioQueue[src.audioQueue.length - 1];
+                    src.bufStartTime = (latest._startTime || ctx.currentTime) + (latest._duration || 0);
+                  } else {
+                    src.bufStartTime = ctx.currentTime;
+                  }
+                }
+              }
+
+              return origScheduleSourceAudio(src, lookahead || 0.042);
+            };
+          }
+        }
+
+        // 2. Destrava o clock de áudio do OpenAL caso o navegador bloqueie Autoplay antes do 1º clique/toque,
+        // evitando que o RetroArch congele no Frame 4 (tela preta) no primeiro carregamento!
         if (audioCtx && audioCtx.state === "suspended") {
           const bootTime = performance.now();
           Object.defineProperty(audioCtx, "currentTime", {
@@ -1017,12 +1167,24 @@
           function unlockRealAudio() {
             try {
               delete audioCtx.currentTime;
-              if (alCtx.sources) {
+              if (alCtx && alCtx.sources) {
                 for (const id in alCtx.sources) {
                   const src = alCtx.sources[id];
                   if (src) {
+                    if (Array.isArray(src.audioQueue)) {
+                      while (src.audioQueue.length > 0) {
+                        const node = src.audioQueue.pop();
+                        try {
+                          node.stop();
+                          node.disconnect();
+                        } catch (e) {}
+                      }
+                    }
+                    if (src.bufQueue) {
+                      src.bufsProcessed = src.bufQueue.length;
+                    }
                     src.bufStartTime = NaN;
-                    if (Array.isArray(src.audioQueue)) src.audioQueue.length = 0;
+                    src.bufOffset = 0;
                   }
                 }
               }
@@ -1038,8 +1200,30 @@
           window.addEventListener("keydown", unlockRealAudio, true);
         }
 
-        // 2. Garante que os controles touch do mobile fiquem visíveis e sincroniza o recorte 4:3 do canvas
-        [0, 100, 280, 500, 900].forEach(function (delay) {
+        // Ressincroniza o áudio imediatamente ao voltar de outra aba ou desbloquear a tela do celular
+        function resyncAudioOnFocus() {
+          try {
+            if (document.visibilityState === "visible" && audioCtx) {
+              if (audioCtx.state === "suspended" && !Object.prototype.hasOwnProperty.call(audioCtx, "currentTime")) {
+                audioCtx.resume?.();
+              }
+              if (alCtx && alCtx.sources) {
+                for (const id in alCtx.sources) {
+                  const src = alCtx.sources[id];
+                  if (src && src.bufQueue && src.bufQueue.length - src.bufsProcessed > 3) {
+                    src.bufsProcessed = Math.max(0, src.bufQueue.length - 1);
+                    src.bufStartTime = NaN;
+                  }
+                }
+              }
+            }
+          } catch (e) {}
+        }
+        document.addEventListener("visibilitychange", resyncAudioOnFocus);
+        window.addEventListener("focus", resyncAudioOnFocus);
+
+        // 3. Garante que os controles touch do mobile fiquem visíveis e sincroniza o recorte 4:3 do canvas
+        [0, 100, 280, 500].forEach(function (delay) {
           setTimeout(function () {
             if (emu && emu.touch && emu.virtualGamepad && !emu.paused) {
               emu.virtualGamepad.style.display = "";
@@ -1048,9 +1232,8 @@
             syncCanvasClipToViewport();
           }, delay);
         });
-        setInterval(syncCanvasClipToViewport, 400);
 
-        // 3. Aplica o mapeamento posicional fiel ao controle de SNES
+        // 4. Aplica o mapeamento posicional fiel ao controle de SNES
         if (emu && !localStorage.getItem("charmoso_snes_layout_v2")) {
           emu.controls = createSnesControllerLayout(false);
           if (typeof emu.setupKeys === "function") emu.setupKeys();
