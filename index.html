@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>ISSD - Charmoso Gauchão 2026/27 Deluxe | Jogar Online (SNES)</title>
   <meta name="description" content="Jogue International Superstar Soccer Deluxe - Charmoso Gauchão 2026-27 Deluxe diretamente no navegador em 60 FPS." />
-  <meta name="theme-color" content="#090d10" />
+  <meta name="theme-color" content="#090514" />
 
   <!-- Open Graph / Social -->
   <meta property="og:type" content="website" />
@@ -20,18 +20,21 @@
   <link rel="preload" href="rom/ISSD%20-%20Charmoso%20Gauch%C3%A3o%202026-27%20Deluxe.smc" as="fetch" crossorigin />
 
   <!-- Favicon SVG inline -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1215'/%3E%3Cpath d='M8 20h48v8H8z' fill='%23008751'/%3E%3Cpath d='M8 28h48v8H8z' fill='%23da291c'/%3E%3Cpath d='M8 36h48v8H8z' fill='%23f3c300'/%3E%3Ccircle cx='32' cy='32' r='11' fill='%23ffffff' stroke='%230b1215' stroke-width='3'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23090514' stroke='%23ff2a54' stroke-width='4'/%3E%3Cpath d='M10 20h44v8H10z' fill='%2300e575'/%3E%3Cpath d='M10 28h44v8H10z' fill='%23ff2a54'/%3E%3Cpath d='M10 36h44v8H10z' fill='%23ffb800'/%3E%3Ccircle cx='32' cy='32' r='10' fill='%23ffffff' stroke='%23090514' stroke-width='3'/%3E%3C/svg%3E" />
 
   <style>
     :root {
-      --bg: #070a0d;
-      --surface: rgba(15, 21, 26, 0.92);
-      --border: rgba(255, 255, 255, 0.12);
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --rs-green: #009b3a;
-      --rs-red: #da291c;
-      --rs-yellow: #fedf00;
+      --app-height: 100dvh;
+      --bg-deep: #080410;
+      --bg-panel: rgba(14, 9, 26, 0.92);
+      --border-cyber: rgba(255, 42, 84, 0.42);
+      --border-subtle: rgba(255, 255, 255, 0.14);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --neon-red: #ff2a54;
+      --neon-green: #00e575;
+      --neon-gold: #ffb800;
+      --neon-cyan: #00f0ff;
     }
 
     * {
@@ -45,35 +48,83 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: var(--bg);
+      background-color: var(--bg-deep);
       color: var(--text);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
       user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
     }
 
+    /* Container fixo que evita corte da tela em navegadores mobile */
     .app-shell {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: var(--app-height, 100dvh);
       display: flex;
       flex-direction: column;
-      width: 100vw;
-      height: 100dvh;
-      position: relative;
-      background:
-        radial-gradient(circle at 18% 15%, rgba(0, 155, 58, 0.12), transparent 40%),
-        radial-gradient(circle at 82% 85%, rgba(218, 41, 28, 0.12), transparent 40%),
-        var(--bg);
+      overflow: hidden;
+      background-color: var(--bg-deep);
+      /* Estética Retro-Grid / Halftone / Synth-Brutalist (estilo overlays História Pública / João Carvalho) */
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(255, 42, 84, 0.22), transparent 55%),
+        radial-gradient(circle at 15% 85%, rgba(0, 229, 117, 0.16), transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(255, 184, 0, 0.14), transparent 45%),
+        radial-gradient(rgba(255, 42, 84, 0.16) 1px, transparent 1px),
+        linear-gradient(to right, rgba(255, 42, 84, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 240, 255, 0.07) 1px, transparent 1px);
+      background-size:
+        100% 100%,
+        100% 100%,
+        100% 100%,
+        16px 16px,
+        40px 40px,
+        40px 40px;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    /* Barra superior compacta com cores do RS */
+    /* Grade em perspectiva estilo Synthwave/Retro-TV no fundo */
+    .retro-grid-floor {
+      position: absolute;
+      left: -25%;
+      right: -25%;
+      bottom: -15%;
+      height: 58%;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(to right, rgba(255, 42, 84, 0.26) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 184, 0, 0.22) 1px, transparent 1px);
+      background-size: 48px 32px;
+      transform: perspective(360px) rotateX(62deg);
+      mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9) 10%, transparent 95%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9) 10%, transparent 95%);
+    }
+
+    /* Vignette + moldura sutil de monitor retrô */
+    .retro-vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.75);
+    }
+
+    /* Barra superior Neo-Retro / Brutalist HUD */
     .topbar {
-      height: 44px;
-      min-height: 44px;
+      height: 46px;
+      min-height: 46px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 14px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(8px);
+      gap: 8px;
+      padding: 0 12px;
+      background: rgba(10, 6, 20, 0.9);
+      border-bottom: 2px solid var(--neon-red);
+      box-shadow: 0 4px 20px rgba(255, 42, 84, 0.22);
+      backdrop-filter: blur(10px);
       z-index: 20;
       position: relative;
     }
@@ -81,101 +132,149 @@
     .topbar::after {
       content: "";
       position: absolute;
-      bottom: -2px;
+      bottom: -4px;
       left: 0;
       right: 0;
       height: 2px;
-      background: linear-gradient(90deg, var(--rs-green) 0% 33.3%, var(--rs-red) 33.3% 66.6%, var(--rs-yellow) 66.6% 100%);
+      background: linear-gradient(
+        90deg,
+        var(--neon-green) 0% 33.3%,
+        var(--neon-red) 33.3% 66.6%,
+        var(--neon-gold) 66.6% 100%
+      );
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 0.92rem;
-      letter-spacing: 0.02em;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .badge-rs {
+      display: inline-flex;
+      width: 20px;
+      height: 14px;
+      border-radius: 2px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 2px 2px 0 var(--neon-red);
+      flex-shrink: 0;
+    }
+
+    .badge-rs span:nth-child(1) { flex: 1; background: var(--neon-green); }
+    .badge-rs span:nth-child(2) { flex: 1; background: var(--neon-red); }
+    .badge-rs span:nth-child(3) { flex: 1; background: var(--neon-gold); }
+
+    .brand-title {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 800;
+      font-size: 0.88rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 42, 84, 0.6);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .badge-rs {
-      display: inline-flex;
-      width: 18px;
-      height: 12px;
-      border-radius: 2px;
-      overflow: hidden;
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+    .tag-cyber {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--neon-gold);
+      background: rgba(255, 184, 0, 0.12);
+      border: 1px solid rgba(255, 184, 0, 0.45);
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
       flex-shrink: 0;
-    }
-
-    .badge-rs span:nth-child(1) { flex: 1; background: var(--rs-green); }
-    .badge-rs span:nth-child(2) { flex: 1; background: var(--rs-red); }
-    .badge-rs span:nth-child(3) { flex: 1; background: var(--rs-yellow); }
-
-    .subtitle {
-      color: var(--muted);
-      font-weight: 500;
-      font-size: 0.78rem;
-      padding-left: 6px;
-      border-left: 1px solid var(--border);
     }
 
     .actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      flex-shrink: 0;
     }
 
+    /* Botões estilo Retro-HUD Brutalista */
     .btn {
       appearance: none;
-      background: rgba(255, 255, 255, 0.07);
+      background: #160d29;
       color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 5px 10px;
-      font-size: 0.78rem;
-      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      box-shadow: 2px 2px 0 rgba(255, 42, 84, 0.65);
+      border-radius: 4px;
+      padding: 5px 9px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+      justify-content: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease, border-color 0.15s ease;
     }
 
     .btn:hover {
-      background: rgba(255, 255, 255, 0.14);
-      border-color: rgba(255, 255, 255, 0.26);
+      background: #231440;
+      border-color: var(--neon-cyan);
+      box-shadow: 2px 2px 0 var(--neon-cyan);
     }
 
     .btn:active {
-      transform: translateY(1px);
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 var(--neon-red);
     }
 
     .btn-primary {
-      background: rgba(0, 155, 58, 0.22);
-      border-color: rgba(0, 155, 58, 0.65);
-      color: #bbf7d0;
+      background: linear-gradient(135deg, rgba(0, 229, 117, 0.24), rgba(0, 155, 58, 0.35));
+      border-color: var(--neon-green);
+      color: #d1fae5;
+      box-shadow: 2px 2px 0 rgba(0, 229, 117, 0.6);
     }
 
     .btn-primary:hover {
-      background: rgba(0, 155, 58, 0.35);
-      border-color: var(--rs-green);
+      background: rgba(0, 229, 117, 0.36);
+      border-color: #6ee7b7;
+      box-shadow: 2px 2px 0 var(--neon-green);
+    }
+
+    .btn-info {
+      background: linear-gradient(135deg, rgba(255, 184, 0, 0.25), rgba(255, 42, 84, 0.25));
+      border-color: var(--neon-gold);
+      color: #fef08a;
+      box-shadow: 2px 2px 0 rgba(255, 184, 0, 0.65);
+      min-width: 30px;
+      font-weight: 900;
+    }
+
+    .btn-info:hover {
+      background: rgba(255, 184, 0, 0.35);
+      border-color: #fde047;
+      box-shadow: 2px 2px 0 var(--neon-gold);
     }
 
     .btn.active {
-      background: rgba(0, 155, 58, 0.25);
-      border-color: var(--rs-green);
-      color: #a7f3d0;
+      background: rgba(255, 42, 84, 0.32);
+      border-color: var(--neon-red);
+      color: #ffe4e6;
+      box-shadow: 2px 2px 0 var(--neon-gold);
     }
 
-    /* Área principal do emulador */
+    /* Palco principal do emulador */
     .stage {
       flex: 1;
       width: 100%;
-      height: calc(100dvh - 44px);
+      height: calc(var(--app-height, 100dvh) - 46px);
       position: relative;
+      z-index: 5;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -183,8 +282,24 @@
     }
 
     #game {
-      width: 100%;
-      height: 100%;
+      width: 100% !important;
+      height: 100% !important;
+      background: transparent !important;
+    }
+
+    /* Deixa o fundo do EmulatorJS transparente para revelar a arte Synthwave/Grid ao redor e atrás dos botões mobile */
+    #game .ejs_parent,
+    .ejs_parent,
+    .ejs_game_parent {
+      background: transparent !important;
+    }
+
+    #game canvas,
+    .ejs_canvas {
+      border: 1px solid rgba(255, 42, 84, 0.45);
+      box-shadow:
+        0 0 28px rgba(255, 42, 84, 0.22),
+        0 0 60px rgba(0, 0, 0, 0.85);
     }
 
     /* Efeito CRT opcional leve via GPU */
@@ -193,25 +308,25 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      z-index: 10;
+      z-index: 12;
       background: linear-gradient(
         rgba(18, 16, 16, 0) 50%,
-        rgba(0, 0, 0, 0.28) 50%
+        rgba(0, 0, 0, 0.3) 50%
       );
       background-size: 100% 4px;
     }
 
-    /* Modal de Controles */
+    /* Modais Estilo Janela Retro-OS / Brutalist Cyber */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(4px);
+      background: rgba(6, 3, 12, 0.82);
+      backdrop-filter: blur(6px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 50;
-      padding: 16px;
+      z-index: 60;
+      padding: 14px;
     }
 
     .modal-backdrop.open {
@@ -219,62 +334,141 @@
     }
 
     .modal {
-      background: #111820;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      max-width: 500px;
+      background: var(--bg-panel);
+      border: 2px solid var(--neon-red);
+      box-shadow:
+        6px 6px 0 rgba(255, 42, 84, 0.5),
+        0 20px 60px rgba(0, 0, 0, 0.85);
+      border-radius: 6px;
+      max-width: 540px;
       width: 100%;
-      padding: 20px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      max-height: 90dvh;
+      overflow-y: auto;
+      color: var(--text);
     }
 
-    .modal-header {
+    .modal-titlebar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      background: linear-gradient(90deg, rgba(255, 42, 84, 0.28), rgba(255, 184, 0, 0.15));
+      border-bottom: 2px solid var(--neon-red);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
-    .modal-header h2 {
-      font-size: 1rem;
-      font-weight: 700;
+    .modal-titlebar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .window-dots {
+      display: inline-flex;
+      gap: 5px;
+    }
+
+    .window-dots i {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .window-dots i:nth-child(1) { background: var(--neon-green); }
+    .window-dots i:nth-child(2) { background: var(--neon-red); }
+    .window-dots i:nth-child(3) { background: var(--neon-gold); }
+
+    .modal-body {
+      padding: 16px;
     }
 
     .controls-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px 12px;
-      font-size: 0.82rem;
+      gap: 8px 10px;
+      font-size: 0.81rem;
     }
 
     .control-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 7px 10px;
+      padding: 8px 10px;
       background: rgba(255, 255, 255, 0.04);
-      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-left: 3px solid var(--neon-green);
+      border-radius: 4px;
       gap: 8px;
     }
 
     kbd {
-      background: #1e293b;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: #1b1130;
+      border: 1px solid rgba(255, 184, 0, 0.45);
       border-bottom-width: 2px;
       border-radius: 4px;
       padding: 2px 6px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 0.74rem;
-      color: #f8fafc;
+      font-size: 0.72rem;
+      color: var(--neon-gold);
       white-space: nowrap;
     }
 
+    .info-section {
+      margin-bottom: 14px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-left: 3px solid var(--neon-gold);
+      border-radius: 4px;
+    }
+
+    .info-section h3 {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      color: var(--neon-gold);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    .info-section p,
+    .info-section ul {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .info-section ul {
+      padding-left: 18px;
+      margin-top: 4px;
+    }
+
+    .info-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .info-badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.7rem;
+      padding: 3px 7px;
+      border-radius: 3px;
+      background: rgba(255, 42, 84, 0.16);
+      border: 1px solid rgba(255, 42, 84, 0.45);
+      color: #fecdd3;
+    }
+
     .modal-actions {
-      margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
@@ -289,10 +483,34 @@
       line-height: 1.45;
     }
 
-    @media (max-width: 640px) {
-      .subtitle, .hide-mobile {
+    /* Otimizações específicas para telas Mobile */
+    @media (max-width: 680px) {
+      .topbar {
+        height: 40px;
+        min-height: 40px;
+        padding: 0 8px;
+        gap: 4px;
+      }
+
+      .stage {
+        height: calc(var(--app-height, 100dvh) - 40px);
+      }
+
+      .tag-cyber,
+      .hide-mobile {
         display: none;
       }
+
+      .brand-title {
+        font-size: 0.74rem;
+      }
+
+      .btn {
+        padding: 4px 7px;
+        font-size: 0.68rem;
+        box-shadow: 1px 1px 0 rgba(255, 42, 84, 0.65);
+      }
+
       .controls-grid {
         grid-template-columns: 1fr;
       }
@@ -301,28 +519,37 @@
 </head>
 <body>
   <div class="app-shell">
+    <!-- Background estética Synth-Grid / Halftone -->
+    <div class="retro-grid-floor" aria-hidden="true"></div>
+    <div class="retro-vignette" aria-hidden="true"></div>
+
     <header class="topbar">
       <div class="brand">
         <span class="badge-rs" aria-hidden="true">
           <span></span><span></span><span></span>
         </span>
-        <span>Charmoso Gauchão 2026/27 Deluxe</span>
-        <span class="subtitle">ISSD • Super Nintendo</span>
+        <span class="brand-title">Charmoso Gauchão 26/27</span>
+        <span class="tag-cyber">[SNES • 60FPS]</span>
       </div>
 
       <div class="actions">
-        <button type="button" class="btn btn-primary" id="btn-remap" title="Abrir editor de botões do Teclado e Controle">
-          <span>⚙️ Editar Botões</span>
+        <button type="button" class="btn btn-primary" id="btn-remap" title="Editar botões do Controle ou Teclado">
+          <span>⚙️</span>
+          <span>Botões</span>
         </button>
-        <button type="button" class="btn" id="btn-controls" title="Ver mapa de botões do ISSD">
-          <span class="hide-mobile">Mapa do Jogo</span>
-          <span style="display:none" id="mobile-help-icon">?</span>
+        <button type="button" class="btn" id="btn-controls" title="Ver mapa de comandos do jogo">
+          <span>🎮</span>
+          <span class="hide-mobile">Comandos</span>
         </button>
-        <button type="button" class="btn" id="btn-crt" title="Alternar efeito de TV de Tubo (Scanlines)">
+        <button type="button" class="btn btn-info" id="btn-info" title="Informações sobre o jogo e dicas">
+          <span>?</span>
+        </button>
+        <button type="button" class="btn" id="btn-crt" title="Alternar filtro TV de Tubo (Scanlines)">
           <span>CRT</span>
         </button>
-        <button type="button" class="btn" id="btn-fullscreen" title="Tela Cheia">
-          <span>Tela Cheia</span>
+        <button type="button" class="btn" id="btn-fullscreen" title="Alternar Tela Cheia">
+          <span>⛶</span>
+          <span class="hide-mobile">Tela Cheia</span>
         </button>
       </div>
     </header>
@@ -332,57 +559,124 @@
     </main>
   </div>
 
-  <!-- Modal explicativo + atalho para o remapeador -->
-  <div class="modal-backdrop" id="controls-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <!-- Modal 1: Mapa de Comandos + Inversão Rápida -->
+  <div class="modal-backdrop" id="controls-modal" role="dialog" aria-modal="true" aria-labelledby="modal-controls-title">
     <div class="modal">
-      <div class="modal-header">
-        <h2 id="modal-title">Botões Otimizados (Posição Real do SNES)</h2>
-        <button type="button" class="btn" id="btn-close-modal">Fechar</button>
+      <div class="modal-titlebar">
+        <div class="modal-titlebar-left">
+          <span class="window-dots"><i></i><i></i><i></i></span>
+          <span id="modal-controls-title">Controle Otimizado (Posição SNES)</span>
+        </div>
+        <button type="button" class="btn" id="btn-close-controls">✕</button>
       </div>
+      <div class="modal-body">
+        <div class="controls-grid">
+          <div class="control-item">
+            <span><strong>B</strong> (Passe / Carrinho)</span>
+            <kbd>Baixo (✕ / A) • Z</kbd>
+          </div>
+          <div class="control-item">
+            <span><strong>Y</strong> (Chute / Corrida)</span>
+            <kbd>Esquerda (▢ / X) • A</kbd>
+          </div>
+          <div class="control-item">
+            <span><strong>A</strong> (Cruzamento / Balão)</span>
+            <kbd>Direita (◯ / B) • X</kbd>
+          </div>
+          <div class="control-item">
+            <span><strong>X</strong> (Lançamento / Tabela)</span>
+            <kbd>Cima (△ / Y) • S</kbd>
+          </div>
+          <div class="control-item">
+            <span><strong>L / R</strong> (Estratégia / Goleiro)</span>
+            <kbd>L1 / R1 • Q / W</kbd>
+          </div>
+          <div class="control-item">
+            <span><strong>Start / Select</strong></span>
+            <kbd>Enter / Shift</kbd>
+          </div>
+        </div>
 
-      <div class="controls-grid">
-        <div class="control-item">
-          <span><strong>B</strong> (Passe / Carrinho)</span>
-          <kbd>Baixo (✕ / A) • Z</kbd>
-        </div>
-        <div class="control-item">
-          <span><strong>Y</strong> (Chute / Corrida)</span>
-          <kbd>Esquerda (▢ / X) • A</kbd>
-        </div>
-        <div class="control-item">
-          <span><strong>A</strong> (Cruzamento / Balão)</span>
-          <kbd>Direita (◯ / B) • X</kbd>
-        </div>
-        <div class="control-item">
-          <span><strong>X</strong> (Lançamento / Tabela)</span>
-          <kbd>Cima (△ / Y) • S</kbd>
-        </div>
-        <div class="control-item">
-          <span><strong>L / R</strong> (Estratégia / Goleiro)</span>
-          <kbd>L1 / R1 • Q / W</kbd>
-        </div>
-        <div class="control-item">
-          <span><strong>Start / Select</strong></span>
-          <kbd>Enter / Shift</kbd>
+        <p class="modal-note">
+          🎮 <strong>Posição Física Real do Super Nintendo:</strong> O botão de baixo passa, o da esquerda chuta/corre, o da direita cruza e o de cima faz lançamento forte. Se o seu controle USB inverter a ordem dos botões, use os atalhos abaixo:
+        </p>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-primary" id="btn-open-ejs-remap">
+            ⚙️ Abrir Editor Completo de Botões
+          </button>
+          <button type="button" class="btn" id="btn-swap-abxy">
+            🔄 Inverter A↔B / X↔Y
+          </button>
         </div>
       </div>
+    </div>
+  </div>
 
-      <p class="modal-note">
-        🎮 <strong>Otimizado para SNES:</strong> Os botões já vêm configurados pela <strong>posição física do controle de Super Nintendo</strong> (botão de baixo passa, esquerda chuta/corre, direita cruza, cima lança). Se o seu controle USB usar outra ordem, clique em <strong>Editar Botões no Emulador</strong> abaixo para mapear como preferir.
-      </p>
+  <!-- Modal 2: Informações do Jogo (?) -->
+  <div class="modal-backdrop" id="info-modal" role="dialog" aria-modal="true" aria-labelledby="modal-info-title">
+    <div class="modal">
+      <div class="modal-titlebar">
+        <div class="modal-titlebar-left">
+          <span class="window-dots"><i></i><i></i><i></i></span>
+          <span id="modal-info-title">Sobre o Jogo • Charmoso Gauchão 26/27</span>
+        </div>
+        <button type="button" class="btn" id="btn-close-info">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <h3>⚽ Ficha Técnica</h3>
+          <p>
+            <strong>ISSD — Charmoso Gauchão 2026-27 Deluxe</strong> é uma modificação (ROM Hack) sobre o clássico <em>International Superstar Soccer Deluxe</em> (Konami, Super Nintendo, 1995), desenvolvida pela equipe <strong>Skinboll Patch ("For The People")</strong>.
+          </p>
+          <div class="info-badges">
+            <span class="info-badge">SNES • 16-Bit</span>
+            <span class="info-badge">Skinboll Patch</span>
+            <span class="info-badge">Temporada 2026/27</span>
+            <span class="info-badge">60 FPS WebAssembly</span>
+          </div>
+        </div>
 
-      <div class="modal-actions">
-        <button type="button" class="btn btn-primary" id="btn-open-ejs-remap">
-          ⚙️ Editar Botões no Emulador
-        </button>
-        <button type="button" class="btn" id="btn-swap-abxy" title="Inverter A/B e X/Y caso seu controle USB inverta os botões">
-          🔄 Inverter A↔B / X↔Y
-        </button>
+        <div class="info-section">
+          <h3>🏆 Destaques do Patch</h3>
+          <ul>
+            <li>Clubes tradicionais do <strong>Campeonato Gaúcho 2026/27</strong> com elencos, uniformes, escudos e cores atualizados (Dupla Gre-Nal, Juventude, Caxias, Brasil de Pelotas, Ypiranga, São José, Avenida, Guarany, Monsoon, Pelotas, Novo Hamburgo e mais).</li>
+            <li>Gráficos de menu, tela inicial, placares e placas de gramado personalizadas do Gauchão.</li>
+            <li>Jogabilidade clássica intacta com narração icônica de 16-bits.</li>
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h3>🔥 Dicas &amp; Comandos Especiais no ISSD</h3>
+          <ul>
+            <li><strong>Corrida (Sprint):</strong> Segure <kbd>Y</kbd> (botão da esquerda) enquanto conduz a bola.</li>
+            <li><strong>Tabela (Um-Dois):</strong> Segure <kbd>L</kbd> + aperte <kbd>B</kbd> para tocar e fazer o jogador disparar na frente.</li>
+            <li><strong>Chapéu / Drible Aéreo:</strong> Aperte <kbd>B + A</kbd> juntos ao dominar a bola.</li>
+            <li><strong>Sair com o Goleiro:</strong> Segure <kbd>X</kbd> (botão de cima) quando o adversário estiver atacando.</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
+    // Ajuste dinâmico de altura real no Mobile (evita corte da tela pela barra de endereço)
+    (function setupMobileViewportFix() {
+      function updateViewportHeight() {
+        const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        document.documentElement.style.setProperty("--app-height", vh + "px");
+        window.dispatchEvent(new Event("resize"));
+      }
+      updateViewportHeight();
+      window.addEventListener("resize", updateViewportHeight);
+      window.addEventListener("orientationchange", function () {
+        setTimeout(updateViewportHeight, 150);
+      });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", updateViewportHeight);
+      }
+    })();
+
     // Layout físico fiel ao Super Nintendo (Posicional: Sul=B, Oeste=Y, Leste=A, Norte=X)
     function createSnesControllerLayout(swapFaceButtons) {
       const btnSouth = swapFaceButtons ? "BUTTON_2" : "BUTTON_1"; // B no SNES (Passe)
@@ -437,28 +731,23 @@
     window.EJS_gameName = "ISSD - Charmoso Gauchão 2026-27 Deluxe";
     window.EJS_gameUrl = encodeURI("rom/ISSD - Charmoso Gauchão 2026-27 Deluxe.smc");
     window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
-    window.EJS_color = "#009b3a";
+    window.EJS_color = "#ff2a54";
     window.EJS_startOnLoaded = true;
     window.EJS_language = "pt-BR";
     window.EJS_threads = false;
     window.EJS_backgroundBlur = false;
     window.EJS_defaultControls = createSnesControllerLayout(false);
 
-    // Aplica o layout otimizado de SNES também se o navegador tiver salvo o padrão antigo invertido
     window.EJS_onGameStart = function () {
       try {
+        // Recalcula dimensões após iniciar para garantir encaixe perfeito no mobile
+        window.dispatchEvent(new Event("resize"));
         const emu = window.EJS_emulator;
         if (emu && !localStorage.getItem("charmoso_snes_layout_v2")) {
           emu.controls = createSnesControllerLayout(false);
-          if (typeof emu.setupKeys === "function") {
-            emu.setupKeys();
-          }
-          if (typeof emu.saveSettings === "function") {
-            emu.saveSettings();
-          }
-          if (typeof emu.checkSupportedOpts === "function") {
-            emu.checkSupportedOpts();
-          }
+          if (typeof emu.setupKeys === "function") emu.setupKeys();
+          if (typeof emu.saveSettings === "function") emu.saveSettings();
+          if (typeof emu.checkSupportedOpts === "function") emu.checkSupportedOpts();
           localStorage.setItem("charmoso_snes_layout_v2", "1");
         }
       } catch (e) {
@@ -466,32 +755,38 @@
       }
     };
 
-    // Utilitários de UI (Editor de Botões Nativo, Inversão Rápida, CRT, Tela Cheia e Modal)
+    // Controles da Interface (Editor de Botões, Modal ?, Modal Comandos, CRT e Tela Cheia)
     (function () {
       const stage = document.getElementById("stage");
       const btnCrt = document.getElementById("btn-crt");
       const btnFullscreen = document.getElementById("btn-fullscreen");
       const btnControls = document.getElementById("btn-controls");
+      const btnInfo = document.getElementById("btn-info");
       const btnRemap = document.getElementById("btn-remap");
       const btnOpenEjsRemap = document.getElementById("btn-open-ejs-remap");
       const btnSwapAbxy = document.getElementById("btn-swap-abxy");
-      const btnCloseModal = document.getElementById("btn-close-modal");
-      const modal = document.getElementById("controls-modal");
+      const btnCloseControls = document.getElementById("btn-close-controls");
+      const btnCloseInfo = document.getElementById("btn-close-info");
+      const controlsModal = document.getElementById("controls-modal");
+      const infoModal = document.getElementById("info-modal");
       let isSwapped = false;
 
+      function closeAllModals() {
+        controlsModal.classList.remove("open");
+        infoModal.classList.remove("open");
+      }
+
       function openNativeControlSettings() {
-        modal.classList.remove("open");
+        closeAllModals();
         const emu = window.EJS_emulator;
         if (!emu) return;
 
-        // Abre a janela nativa de configuração de controles do EmulatorJS
         if (emu.controlMenu) {
           const isHidden = emu.controlMenu.style.display === "none" || !emu.controlMenu.style.display;
           emu.controlMenu.style.display = isHidden ? "" : "none";
           return;
         }
 
-        // Fallback caso o botão esteja na barra inferior do emulador
         const controlBtn = document.querySelector(".ejs_menu_button");
         if (controlBtn) controlBtn.click();
       }
@@ -504,11 +799,11 @@
         const emu = window.EJS_emulator;
         if (emu) {
           emu.controls = createSnesControllerLayout(isSwapped);
-          if (typeof emu.saveSettings === "function") emu.saveSettings();
           if (typeof emu.setupKeys === "function") emu.setupKeys();
+          if (typeof emu.saveSettings === "function") emu.saveSettings();
         }
         btnSwapAbxy.textContent = isSwapped
-          ? "✅ A↔B / X↔Y Invertidos (Clique p/ Padrão SNES)"
+          ? "✅ A↔B / X↔Y Invertidos (Voltar ao Padrão)"
           : "🔄 Inverter A↔B / X↔Y";
       });
 
@@ -527,21 +822,28 @@
       });
 
       btnControls.addEventListener("click", function () {
-        modal.classList.add("open");
+        infoModal.classList.remove("open");
+        controlsModal.classList.add("open");
       });
 
-      btnCloseModal.addEventListener("click", function () {
-        modal.classList.remove("open");
+      btnInfo.addEventListener("click", function () {
+        controlsModal.classList.remove("open");
+        infoModal.classList.add("open");
       });
 
-      modal.addEventListener("click", function (e) {
-        if (e.target === modal) modal.classList.remove("open");
+      btnCloseControls.addEventListener("click", closeAllModals);
+      btnCloseInfo.addEventListener("click", closeAllModals);
+
+      controlsModal.addEventListener("click", function (e) {
+        if (e.target === controlsModal) closeAllModals();
+      });
+
+      infoModal.addEventListener("click", function (e) {
+        if (e.target === infoModal) closeAllModals();
       });
 
       window.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && modal.classList.contains("open")) {
-          modal.classList.remove("open");
-        }
+        if (e.key === "Escape") closeAllModals();
       });
     })();
   </script>
