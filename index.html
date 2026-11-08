@@ -372,6 +372,11 @@
       box-shadow: 2px 2px 0 var(--neon-cyan);
     }
 
+    .btn-download-topbar {
+      padding: 6px 10px;
+      font-size: 0.78rem;
+    }
+
     .btn.active {
       background: rgba(255, 42, 84, 0.32);
       border-color: var(--neon-red);
@@ -634,6 +639,15 @@
         font-size: 0.76rem;
       }
 
+      .btn-download-topbar {
+        padding: 6px 8px;
+        font-size: 0.76rem;
+      }
+
+      .btn-download-topbar .btn-download-text {
+        display: none;
+      }
+
       .menu-dropdown {
         width: min(290px, calc(100vw - 20px));
       }
@@ -661,6 +675,12 @@
           <span class="rec-dot"></span>
           <span id="record-quick-label">00:00</span>
         </button>
+
+        <!-- Botão direto de Baixar ROM ao lado do Menu -->
+        <a class="btn btn-download btn-download-topbar" id="btn-download-topbar" href="rom/ISSD%20-%20Charmoso%20Gauch%C3%A3o%202026-27%20Deluxe.zip" download="ISSD - Charmoso Gauchão 2026-27 Deluxe.zip" title="Baixar ROM (.zip) para jogar em qualquer emulador de SNES">
+          <span>⬇️</span>
+          <span class="btn-download-text">Baixar ROM</span>
+        </a>
 
         <!-- Botão único de Menu que concentra todas as opções -->
         <button type="button" class="btn btn-menu-trigger" id="btn-menu-toggle" aria-expanded="false" aria-controls="options-menu">
@@ -1224,6 +1244,7 @@
       const btnRecordQuick = document.getElementById("btn-record-quick");
       const recordQuickLabel = document.getElementById("record-quick-label");
       const btnDownloadRom = document.getElementById("btn-download-rom");
+      const btnDownloadTopbar = document.getElementById("btn-download-topbar");
       const btnCrt = document.getElementById("btn-crt");
       const crtBadge = document.getElementById("crt-badge");
       const btnFullscreen = document.getElementById("btn-fullscreen");
@@ -1269,6 +1290,12 @@
       btnDownloadRom.addEventListener("click", function () {
         setTimeout(closeMenu, 150);
       });
+
+      if (btnDownloadTopbar) {
+        btnDownloadTopbar.addEventListener("click", function () {
+          setTimeout(closeMenu, 150);
+        });
+      }
 
       // Estado do Gravador de Partidas
       let mediaRecorder = null;
